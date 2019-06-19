@@ -9,6 +9,6 @@ $factory->define(Album::class, function (Faker $faker) {
     return [
         'title' => $faker->title,
         'slug' => $faker->slug,
-        'content' => $faker->content
+        'content' => $faker->text
     ];
 });
