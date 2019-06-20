@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Picture;
+use Auth;
 use Illuminate\Http\Request;
+use Validator;
 
 class PictureController extends Controller
 {
@@ -18,16 +20,6 @@ class PictureController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -35,7 +27,21 @@ class PictureController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $picture = Picture::create([
+            // 'user_id' => Auth::id(),
+            'title' => $request->title,
+            'content' => $request->content,
+            'image' => $request->image
+        ]);
+
+        $response = [
+            'success' => true,
+            'data' => $picture,
+            'message' => 'Picture stored successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
