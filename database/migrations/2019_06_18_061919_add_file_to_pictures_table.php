@@ -14,7 +14,7 @@ class AddFileToPicturesTable extends Migration
     public function up()
     {
         Schema::table('pictures', function (Blueprint $table) {
-            $table->string('file')->after('content');
+            $table->string('file')->after('content')->default('image.jpg');;
         });
     }
 

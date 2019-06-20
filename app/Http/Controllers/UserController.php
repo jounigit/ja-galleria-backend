@@ -17,6 +17,7 @@ class UserController extends Controller
     public function index()
     {
         return response()->json(User::with(['pictures'])->get());
+        // return response()->json(User::all());
     }
 
     /**
