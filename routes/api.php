@@ -19,6 +19,7 @@ Route::post('register', 'UserController@register');
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/users','UserController@index');
     Route::get('users/{user}','UserController@show');
+    Route::get('/pictures','PictureController@index');
 });
 
 /* Route::middleware('auth:api')->get('/user', function (Request $request) {
