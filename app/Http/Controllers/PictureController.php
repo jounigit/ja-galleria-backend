@@ -29,7 +29,7 @@ class PictureController extends Controller
     {
 
         $picture = Picture::create([
-            // 'user_id' => Auth::id(),
+            'user_id' => Auth::id(),
             'title' => $request->title,
             'content' => $request->content,
             'image' => $request->image
