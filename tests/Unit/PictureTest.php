@@ -39,15 +39,15 @@ class PictureTest extends TestCase
     public function testCreatePicture()
     {
        $data = [
-                        'title' => "Uusi kuva",
-                        'content' => "Hieno kuva tulossa",
-                        'image' => "https://images.pexels.com/photos/1000084/pexels-photo-1000084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                    ];
-            $user = factory(\App\User::class)->create();
-            $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures',$data);
-            $response->assertStatus(200);
-            $response->assertJson(['status' => true]);
-            $response->assertJson(['message' => "Picture stored successfully."]);
-            $response->assertJson(['data' => $data]);
+            'title' => "Uusi kuva",
+            'content' => "Hieno kuva tulossa",
+            'image'=>'https://source.unsplash.com/random'
+        ];
+        $user = factory(\App\User::class)->create();
+        $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures',$data);
+        $response->assertStatus(200);
+        $response->assertJson(['status' => true]);
+        $response->assertJson(['message' => "Picture stored successfully."]);
+        $response->assertJson(['data' => $data]);
       }
 }

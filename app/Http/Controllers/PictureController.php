@@ -28,11 +28,29 @@ class PictureController extends Controller
     public function store(Request $request)
     {
 
+    /*     $picture = Picture::create([
+            'user_id' => 1,
+            'title' => 'KUVA TESTI',
+            'slug' => 'kuva-testi',
+            'content' => 'Kuvateksti',
+            'image' => 'https://source.unsplash.com/random'
+        ]);
+  */
+
+/*         $picture = [
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+            'slug' => str_slug($request->title),
+            'content' => $request->content,
+            'image' => $request->image,
+        ]; */
+
         $picture = Picture::create([
             'user_id' => Auth::id(),
             'title' => $request->title,
+            'slug' => str_slug($request->title),
             'content' => $request->content,
-            'image' => $request->image
+            'image' => $request->image,
         ]);
 
         $response = [
