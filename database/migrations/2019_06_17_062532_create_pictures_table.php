@@ -15,9 +15,9 @@ class CreatePicturesTable extends Migration
     {
         Schema::create('pictures', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable();
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug')->nullable();
             $table->text('content')->nullable();
             $table->timestamps();
             $table->softDeletes();

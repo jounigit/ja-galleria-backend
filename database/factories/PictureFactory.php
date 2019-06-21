@@ -10,6 +10,6 @@ $factory->define(Picture::class, function (Faker $faker) {
         'title' => $faker->title,
         'slug' => $faker->slug,
         'content' => $faker->text,
-        'image'=>'https://source.unsplash.com/random'
+        'image'=> 'https://source.unsplash.com/random'
     ];
 });
