@@ -15,10 +15,10 @@ class CreateAlbumsTable extends Migration
     {
         Schema::create('albums', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('user_id');
-            $table->unsignedInteger('category_id');
+            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedInteger('category_id')->nullable();
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug')->nullable();
             $table->text('content')->nullable();
             $table->timestamps();
             $table->softDeletes();
