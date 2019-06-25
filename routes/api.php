@@ -15,12 +15,16 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'UserController@login');
 Route::post('register', 'UserController@register');
-Route::post('/pictures','PictureController@store');
+Route::get('/pictures','PictureController@index');
+Route::get('/pictures/{picture}','PictureController@show');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/users','UserController@index');
     Route::get('users/{user}','UserController@show');
-    Route::get('/pictures','PictureController@index');
+    Route::resource('/pictures','PictureController')->except(['index', 'show']);
+    // Route::delete('/pictures/{picture}', 'PictureController@destroy');
+    // Route::get('/pictures','PictureController@index');
+    // Route::post('/pictures','PictureController@store');
 
 });
 

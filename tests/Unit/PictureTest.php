@@ -3,11 +3,21 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+// use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PictureTest extends TestCase
 {
+    // use RefreshDatabase;
+    // use DatabaseMigrations;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->artisan('db:seed');
+    }
+
     /**
      * Test getting all pictures.
      *
@@ -15,9 +25,7 @@ class PictureTest extends TestCase
      */
     public function testGettingAllPictures()
     {
-        $user = factory(\App\User::class)->create();
-        $response = $this->actingAs($user, 'api')->json('GET', '/api/pictures');
-
+        $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
         $response->assertJsonStructure(
             [
@@ -36,6 +44,31 @@ class PictureTest extends TestCase
         );
     }
 
+    /**
+     * Test getting one picture.
+     *
+     * @return void
+     */
+    public function testGettingPicture()
+    {
+        $response = $this->json('GET', '/api/pictures');
+        $response->assertStatus(200);
+        $picture = $response->getData()[0];
+
+        $showPicture = $this->json('GET', 'api/pictures/' . $picture->id);
+
+        $showPicture->assertStatus(200);
+        // $getId = $showPicture->getData()->id;
+        $showPicture->assertJson([
+            'id' => $picture->id
+        ]);
+    }
+
+    /**
+     * Test creating picture.
+     *
+     * @return void
+     */
     public function testCreatePicture()
     {
        $data = [
@@ -45,15 +78,56 @@ class PictureTest extends TestCase
         ];
         $user = factory(\App\User::class)->create();
 
-	//$user->dump();
-
         $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures',$data);
-	
-	$response->dump();	
-        
-	$response->assertStatus(200);
-        $response->assertJson(['status' => true]);
+
+	    $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
         $response->assertJson(['message' => "Picture stored successfully."]);
         $response->assertJson(['data' => $data]);
-      }
+    }
+
+    /**
+     * Test creating picture.
+     *
+     * @return void
+     */
+    public function testUpdatePicture()
+    {
+        $response = $this->json('GET', '/api/pictures');
+        $response->assertStatus(200);
+        $picture = $response->getData()[0];
+
+       $data = [
+            'title' => 'Päivitetty kuva',
+            'content' => 'Hieno päivitys',
+            'image'=>'https://source.unsplash.com/random'
+        ];
+
+        $user = factory(\App\User::class)->create();
+        $updated = $this->actingAs($user, 'api')->json('PUT', 'api/pictures/' . $picture->id, $data);
+
+	    $updated->assertStatus(200);
+        $updated->assertJson(['success' => true]);
+        $updated->assertJson(['message' => "Picture updated successfully."]);
+    }
+
+    /**
+     * Test deleting the picture.
+     *
+     * @return void
+     */
+    public function testDeletePicture()
+    {
+        $response = $this->json('GET', '/api/pictures');
+        $response->assertStatus(200);
+
+        $picture = $response->getData()[0];
+
+        $user = factory(\App\User::class)->create();
+        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/pictures/' . $picture->id);
+        // $delete->dump();
+        $delete->assertStatus(200);
+        $delete->assertJson(['message' => "Picture deleted!"]);
+
+    }
 }
