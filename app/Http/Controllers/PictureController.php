@@ -16,7 +16,8 @@ class PictureController extends Controller
      */
     public function index()
     {
-        return response()->json(Picture::all());
+        $pictures = Picture::all();
+        return response()->json($pictures);
     }
 
     /**
@@ -27,23 +28,6 @@ class PictureController extends Controller
      */
     public function store(Request $request)
     {
-
-    /*     $picture = Picture::create([
-            'user_id' => 1,
-            'title' => 'KUVA TESTI',
-            'slug' => 'kuva-testi',
-            'content' => 'Kuvateksti',
-            'image' => 'https://source.unsplash.com/random'
-        ]);
-  */
-
-/*         $picture = [
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'slug' => str_slug($request->title),
-            'content' => $request->content,
-            'image' => $request->image,
-        ]; */
 
         $picture = Picture::create([
             'user_id' => Auth::id(),
@@ -70,18 +54,7 @@ class PictureController extends Controller
      */
     public function show(Picture $picture)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Picture  $picture
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Picture $picture)
-    {
-        //
+        return response()->json($picture, 200);
     }
 
     /**
@@ -93,7 +66,24 @@ class PictureController extends Controller
      */
     public function update(Request $request, Picture $picture)
     {
-        //
+        /* $data = [
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+            'slug' => str_slug($request->title),
+            'content' => $request->content,
+            'image' => $request->image,
+        ]; */
+        $reqData = $request->all();
+        $reqData['slug'] = str_slug($request->title);
+
+        $picture->update($reqData);
+
+        $response = [
+            'success' => true,
+            'message' => 'Picture updated successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -104,6 +94,12 @@ class PictureController extends Controller
      */
     public function destroy(Picture $picture)
     {
-        //
+        $status = $picture->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Picture deleted!' : 'Error deleting Picture'
+        ]);
     }
+
 }
