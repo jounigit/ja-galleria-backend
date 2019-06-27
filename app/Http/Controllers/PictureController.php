@@ -66,13 +66,7 @@ class PictureController extends Controller
      */
     public function update(Request $request, Picture $picture)
     {
-        /* $data = [
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'slug' => str_slug($request->title),
-            'content' => $request->content,
-            'image' => $request->image,
-        ]; */
+
         $reqData = $request->all();
         $reqData['slug'] = str_slug($request->title);
 
