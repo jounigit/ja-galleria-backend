@@ -19,10 +19,18 @@ class Picture extends Model
     ];
 
     /**
-     * Get the user that owns the category.
+     * Get the user that owns the picture.
      */
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the albums picture belongs.
+     */
+    public function albums()
+    {
+        return $this->belongsToMany(Album::class);
     }
 }
