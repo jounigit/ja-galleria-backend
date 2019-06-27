@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use Auth;
 use Illuminate\Http\Request;
 
 class AlbumController extends Controller
@@ -14,17 +15,8 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $albums = Album::all();
+        return response()->json($albums);
     }
 
     /**
@@ -35,7 +27,21 @@ class AlbumController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $album = Album::create([
+            'user_id' => Auth::id(),
+            'category_id' => $request->gatecory_id,
+            'title' => $request->title,
+            'slug' => str_slug($request->title),
+            'content' => $request->content,
+        ]);
+
+        $response = [
+            'success' => true,
+            'data' => $album,
+            'message' => 'Album stored successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -46,18 +52,7 @@ class AlbumController extends Controller
      */
     public function show(Album $album)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Album  $album
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Album $album)
-    {
-        //
+        return response()->json($album, 200);
     }
 
     /**
@@ -69,7 +64,17 @@ class AlbumController extends Controller
      */
     public function update(Request $request, Album $album)
     {
-        //
+        $reqData = $request->all();
+        $reqData['slug'] = str_slug($request->title);
+
+        $album->update($reqData);
+
+        $response = [
+            'success' => true,
+            'message' => 'Album updated successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
@@ -80,6 +85,11 @@ class AlbumController extends Controller
      */
     public function destroy(Album $album)
     {
-        //
+        $status = $album->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Album deleted!' : 'Error deleting Album'
+        ]);
     }
 }

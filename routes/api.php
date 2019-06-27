@@ -15,19 +15,18 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'UserController@login');
 Route::post('register', 'UserController@register');
+Route::get('/albums','AlbumController@index');
+Route::get('/albums/{album}','AlbumController@show');
 Route::get('/pictures','PictureController@index');
 Route::get('/pictures/{picture}','PictureController@show');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/users','UserController@index');
     Route::get('users/{user}','UserController@show');
+    Route::resource('/albums','AlbumController')->except(['index', 'show']);
     Route::resource('/pictures','PictureController')->except(['index', 'show']);
     // Route::delete('/pictures/{picture}', 'PictureController@destroy');
-    // Route::get('/pictures','PictureController@index');
     // Route::post('/pictures','PictureController@store');
 
 });
 
-/* Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-}); */
