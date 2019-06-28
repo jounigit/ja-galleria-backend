@@ -6,8 +6,9 @@ use App\Picture;
 use Auth;
 use Illuminate\Http\Request;
 use Validator;
+use App\Http\Controllers\BaseController;
 
-class PictureController extends Controller
+class PictureController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,8 @@ class PictureController extends Controller
     public function index()
     {
         $pictures = Picture::all();
-        return response()->json($pictures);
+        return $this->sendResponse($pictures, 'Pictures retrieved.');
+
     }
 
     /**
@@ -28,6 +30,14 @@ class PictureController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:50',
+            'image' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
 
         $picture = Picture::create([
             'user_id' => Auth::id(),
@@ -37,13 +47,7 @@ class PictureController extends Controller
             'image' => $request->image,
         ]);
 
-        $response = [
-            'success' => true,
-            'data' => $picture,
-            'message' => 'Picture stored successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($picture, 'Picture stored successfully.');
     }
 
     /**
@@ -66,18 +70,20 @@ class PictureController extends Controller
      */
     public function update(Request $request, Picture $picture)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'max:50',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
 
         $reqData = $request->all();
         $reqData['slug'] = str_slug($request->title);
 
         $picture->update($reqData);
 
-        $response = [
-            'success' => true,
-            'message' => 'Picture updated successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($picture, 'Picture updated successfully.');
     }
 
     /**
@@ -88,12 +94,10 @@ class PictureController extends Controller
      */
     public function destroy(Picture $picture)
     {
-        $status = $picture->delete();
+        $picture->delete();
 
-        return response()->json([
-            'status' => $status,
-            'message' => $status ? 'Picture deleted!' : 'Error deleting Picture'
-        ]);
+        return $this->sendResponse($picture, 'Picture deleted.');
+
     }
 
 }

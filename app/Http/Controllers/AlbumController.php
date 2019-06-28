@@ -6,8 +6,9 @@ use App\Album;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
+use App\Http\Controllers\BaseController;
 
-class AlbumController extends Controller
+class AlbumController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,7 @@ class AlbumController extends Controller
     public function index()
     {
         $albums = Album::all();
-        return response()->json($albums);
+        return $this->sendResponse($albums, 'Albums retrieved.');
     }
 
     /**
@@ -44,13 +45,7 @@ class AlbumController extends Controller
             'content' => $request->content,
         ]);
 
-        $response = [
-            'success' => true,
-            'data' => $album,
-            'message' => 'Album stored successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($album, 'Album stored successfully.');
     }
 
     /**
@@ -86,12 +81,7 @@ class AlbumController extends Controller
 
         $album->update($reqData);
 
-        $response = [
-            'success' => true,
-            'message' => 'Album updated successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($album, 'Album updated successfully.');
     }
 
     /**
@@ -102,11 +92,8 @@ class AlbumController extends Controller
      */
     public function destroy(Album $album)
     {
-        $status = $album->delete();
+        $album->delete();
 
-        return response()->json([
-            'status' => $status,
-            'message' => $status ? 'Album deleted!' : 'Error deleting Album'
-        ]);
+        return $this->sendResponse($album, 'Album deleted.');
     }
 }
