@@ -6,8 +6,9 @@ use App\Category;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
+use App\Http\Controllers\BaseController as BaseController;
 
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +18,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return response()->json($categories);
+        return $this->sendResponse($categories, 'Categories retrieved.');
     }
 
     /**
@@ -43,13 +44,7 @@ class CategoryController extends Controller
             'content' => $request->content,
         ]);
 
-        $response = [
-            'success' => true,
-            'data' => $category,
-            'message' => 'Category stored successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($category, 'Category stored successfully.');
     }
 
     /**
@@ -85,12 +80,7 @@ class CategoryController extends Controller
 
         $category->update($reqData);
 
-        $response = [
-            'success' => true,
-            'message' => 'Category updated successfully.'
-        ];
-
-        return response()->json($response, 200);
+        return $this->sendResponse($category, 'Category updated successfully.');
     }
 
     /**
@@ -101,11 +91,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $status = $category->delete();
+        $category->delete();
 
-        return response()->json([
-            'status' => $status,
-            'message' => $status ? 'Category deleted!' : 'Error deleting Category'
-        ]);
+        return $this->sendResponse($category, 'Category deleted.');
     }
 }
