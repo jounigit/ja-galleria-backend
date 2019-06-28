@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\category;
+use App\Category;
+use Auth;
+use Validator;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -14,17 +16,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $categories = Category::all();
+        return response()->json($categories);
     }
 
     /**
@@ -35,51 +28,84 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:25',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $category = Category::create([
+            'user_id' => Auth::id(),
+            'title' => $request->title,
+            'slug' => str_slug($request->title),
+            'content' => $request->content,
+        ]);
+
+        $response = [
+            'success' => true,
+            'data' => $category,
+            'message' => 'Category stored successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\category  $category
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(category $category)
+    public function show(Category $category)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(category $category)
-    {
-        //
+        return response()->json($category);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\category  $category
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, category $category)
+    public function update(Request $request, Category $category)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:25',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $reqData = $request->all();
+        $reqData['slug'] = str_slug($request->title);
+
+        $category->update($reqData);
+
+        $response = [
+            'success' => true,
+            'message' => 'Category updated successfully.'
+        ];
+
+        return response()->json($response, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\category  $category
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(category $category)
+    public function destroy(Category $category)
     {
-        //
+        $status = $category->delete();
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'Category deleted!' : 'Error deleting Category'
+        ]);
     }
 }

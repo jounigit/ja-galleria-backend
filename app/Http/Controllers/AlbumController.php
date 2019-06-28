@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use Auth;
+use Validator;
 use Illuminate\Http\Request;
 
 class AlbumController extends Controller
@@ -27,6 +28,14 @@ class AlbumController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:50',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
         $album = Album::create([
             'user_id' => Auth::id(),
             'category_id' => $request->gatecory_id,
@@ -64,6 +73,14 @@ class AlbumController extends Controller
      */
     public function update(Request $request, Album $album)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|max:50',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
         $reqData = $request->all();
         $reqData['slug'] = str_slug($request->title);
 
