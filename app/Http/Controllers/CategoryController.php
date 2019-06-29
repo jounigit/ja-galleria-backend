@@ -18,7 +18,8 @@ class CategoryController extends BaseController
     public function index()
     {
         $categories = Category::all();
-        return $this->sendResponse($categories, 'Categories retrieved.');
+        return response()->json($categories, 200);
+        // return $this->sendResponse($categories, 'Categories retrieved.');
     }
 
     /**
@@ -93,6 +94,6 @@ class CategoryController extends BaseController
     {
         $category->delete();
 
-        return $this->sendResponse($category, 'Category deleted.');
+        return $this->sendResponse($category, 'Category deleted!');
     }
 }
