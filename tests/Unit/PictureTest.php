@@ -3,14 +3,12 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-// use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PictureTest extends TestCase
 {
     // use RefreshDatabase;
-    // use DatabaseMigrations;
 
     public function setUp(): void
     {

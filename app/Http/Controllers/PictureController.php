@@ -18,8 +18,8 @@ class PictureController extends BaseController
     public function index()
     {
         $pictures = Picture::all();
-        return $this->sendResponse($pictures, 'Pictures retrieved.');
-
+        return response()->json($pictures, 200);
+        // return $this->sendResponse($pictures->toArray(), 'Pictures retrieved.');
     }
 
     /**
@@ -96,7 +96,7 @@ class PictureController extends BaseController
     {
         $picture->delete();
 
-        return $this->sendResponse($picture, 'Picture deleted.');
+        return $this->sendResponse($picture, 'Picture deleted!');
 
     }
 
