@@ -126,10 +126,10 @@ class AlbumTest extends TestCase
         $response = $this->json('GET', '/api/albums');
         $response->assertStatus(200);
 
-        $Album = $response->getData()[0];
+        $album = $response->getData()[0];
 
         $user = factory(\App\User::class)->create();
-        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/albums/' . $Album->id);
+        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/albums/' . $album->id);
         // $delete->dump();
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
