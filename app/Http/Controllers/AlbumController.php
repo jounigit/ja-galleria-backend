@@ -18,7 +18,8 @@ class AlbumController extends BaseController
     public function index()
     {
         $albums = Album::all();
-        return $this->sendResponse($albums, 'Albums retrieved.');
+        return response()->json($albums);
+        // return $this->sendResponse($albums, 'Albums retrieved.');
     }
 
     /**
@@ -69,7 +70,7 @@ class AlbumController extends BaseController
     public function update(Request $request, Album $album)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|max:50',
+            'title' => 'max:50',
         ]);
 
         if($validator->fails()){
@@ -94,6 +95,6 @@ class AlbumController extends BaseController
     {
         $album->delete();
 
-        return $this->sendResponse($album, 'Album deleted.');
+        return $this->sendResponse($album, 'Album deleted!');
     }
 }
