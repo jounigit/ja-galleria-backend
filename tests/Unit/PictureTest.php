@@ -135,4 +135,15 @@ class PictureTest extends TestCase
         $delete->assertJson(['message' => "Picture deleted!"]);
 
     }
+
+      /** picture has relations */
+      public function pictureHasAllRelations(){
+        $response = $this->json('GET', '/api/pictures');
+        $response->assertStatus(200);
+
+        $picture = $response->getData()[0];
+
+        $this->assertInstanceOf('App\User', $picture->user);
+        $this->assertInstanceOf('App\Album', $picture->albums);
+    }
 }

@@ -134,4 +134,19 @@ class AlbumTest extends TestCase
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
     }
+
+    /** album has relations */
+    public function albumHasAllRelations(){
+        $response = $this->json('GET', '/api/albums');
+        $response->assertStatus(200);
+
+        $album = $response->getData()[0];
+
+        $this->assertInstanceOf('App\User', $album->user);
+        $this->assertInstanceOf('App\Category', $album->category);
+        $this->assertInstanceOf('App\Picture', $album->pictures);
+    }
+
+
+
 }
