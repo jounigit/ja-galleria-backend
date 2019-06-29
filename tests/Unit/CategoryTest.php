@@ -130,4 +130,15 @@ class CategoryTest extends TestCase
         $delete->assertJson(['message' => "Category deleted!"]);
     }
 
+    /** category has relations */
+    public function categoryHasAllRelations(){
+        $response = $this->json('GET', '/api/categories');
+        $response->assertStatus(200);
+
+        $category = $response->getData()[0];
+
+        $this->assertInstanceOf('App\User', $category->user);
+        $this->assertInstanceOf('App\Album', $category->albums);
+    }
+
 }
