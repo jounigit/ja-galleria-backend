@@ -5,15 +5,21 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Picture;
 
 class PictureTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
+    /**
+     * setup picturetest with 5 pictures.
+     */
     public function setUp(): void
     {
         parent::setUp();
-        $this->artisan('db:seed');
+        factory(Picture::class, 5)->create([
+            'user_id' => 1
+        ]);
     }
 
     /**
@@ -25,6 +31,7 @@ class PictureTest extends TestCase
     {
         $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
+        $response->assertJsonCount(5);
         $response->assertJsonStructure(
             [
                 [
@@ -85,7 +92,7 @@ class PictureTest extends TestCase
     }
 
     /**
-     * Test creating picture.
+     * Test updating picture.
      *
      * @return void
      */
