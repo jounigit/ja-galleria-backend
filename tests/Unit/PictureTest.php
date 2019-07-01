@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Picture;
+use App\User;
 
 class PictureTest extends TestCase
 {
@@ -17,8 +18,9 @@ class PictureTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $user = factory(User::class)->create();
         factory(Picture::class, 5)->create([
-            'user_id' => 1
+            'user_id' => $user->id
         ]);
     }
 
@@ -63,7 +65,6 @@ class PictureTest extends TestCase
         $showPicture = $this->json('GET', 'api/pictures/' . $picture->id);
 
         $showPicture->assertStatus(200);
-        // $getId = $showPicture->getData()->id;
         $showPicture->assertJson([
             'id' => $picture->id
         ]);
@@ -81,7 +82,7 @@ class PictureTest extends TestCase
             'content' => 'Hieno kuva tulossa',
             'image'=>'https://source.unsplash.com/random'
         ];
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
 
         $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures',$data);
 
@@ -130,20 +131,10 @@ class PictureTest extends TestCase
 
         $user = factory(\App\User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/pictures/' . $picture->id);
-        // $delete->dump();
+
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Picture deleted!"]);
 
     }
 
-      /** picture has relations */
-      public function pictureHasAllRelations(){
-        $response = $this->json('GET', '/api/pictures');
-        $response->assertStatus(200);
-
-        $picture = $response->getData()[0];
-
-        $this->assertInstanceOf('App\User', $picture->user);
-        $this->assertInstanceOf('App\Album', $picture->albums);
-    }
 }

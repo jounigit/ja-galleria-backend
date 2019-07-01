@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\Category;
+use App\User;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -17,8 +18,9 @@ class CategoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $user = factory(User::class)->create();
         factory(Category::class, 3)->create([
-            'user_id' => 1
+            'user_id' => $user->id
         ]);
     }
 
@@ -67,7 +69,7 @@ class CategoryTest extends TestCase
         ]);
     }
 
-        /**
+    /**
      * Test creating category.
      *
      * @return void
@@ -78,7 +80,7 @@ class CategoryTest extends TestCase
             'title' => 'Uusi categoriesi',
             'content' => 'Hieno sisältö'
         ];
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
 
         $response = $this->actingAs($user, 'api')->json('POST', '/api/categories', $data);
 
@@ -100,19 +102,18 @@ class CategoryTest extends TestCase
         $category = $response->getData()[0];
 
         $data = [
-            'user_id' => 1,
             'title' => 'Päivitetty category',
             'content' => 'Hieno päivitys'
         ];
 
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $updated = $this->actingAs($user, 'api')->json('PUT', 'api/categories/' . $category->id, $data);
         $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Category updated successfully."]);
     } /**/
 
-       /**
+    /**
      * Test deleting the category.
      *
      * @return void
@@ -124,21 +125,10 @@ class CategoryTest extends TestCase
 
         $category = $response->getData()[0];
 
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/categories/' . $category->id);
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Category deleted!"]);
-    }
-
-    /** category has relations */
-    public function categoryHasAllRelations(){
-        $response = $this->json('GET', '/api/categories');
-        $response->assertStatus(200);
-
-        $category = $response->getData()[0];
-
-        $this->assertInstanceOf('App\User', $category->user);
-        $this->assertInstanceOf('App\Album', $category->albums);
     }
 
 }

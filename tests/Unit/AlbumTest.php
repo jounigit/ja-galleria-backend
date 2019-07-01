@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\Album;
+use App\User;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -17,9 +18,9 @@ class AlbumTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $user = factory(User::class)->create();
         factory(Album::class, 3)->create([
-            'user_id' => 1,
-            'category_id' => 2
+            'user_id' => $user->id
         ]);
     }
 
@@ -102,8 +103,6 @@ class AlbumTest extends TestCase
         $album = $response->getData()[0];
 
         $data = [
-            'user_id' => 1,
-            'category_id' => 1,
             'title' => 'Päivitetty albumi',
             'content' => 'Hieno päivitys'
         ];
@@ -134,19 +133,5 @@ class AlbumTest extends TestCase
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
     }
-
-    /** album has relations */
-    public function albumHasAllRelations(){
-        $response = $this->json('GET', '/api/albums');
-        $response->assertStatus(200);
-
-        $album = $response->getData()[0];
-
-        $this->assertInstanceOf('App\User', $album->user);
-        $this->assertInstanceOf('App\Category', $album->category);
-        $this->assertInstanceOf('App\Picture', $album->pictures);
-    }
-
-
 
 }
