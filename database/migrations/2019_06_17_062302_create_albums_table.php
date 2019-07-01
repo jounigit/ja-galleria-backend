@@ -15,13 +15,23 @@ class CreateAlbumsTable extends Migration
     {
         Schema::create('albums', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('user_id')->nullable();
-            $table->unsignedInteger('category_id')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('category_id')->nullable();
             $table->string('title');
             $table->string('slug')->nullable();
             $table->text('content')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users')
+                    ->onDelete('cascade');
+
+            $table->foreign('category_id')
+                    ->references('id')
+                    ->on('categories')
+                    ->onDelete('cascade');
         });
     }
 
