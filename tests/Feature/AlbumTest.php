@@ -1,16 +1,16 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Album;
 use App\User;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+// use Illuminate\Foundation\Testing\WithFaker;
+// use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AlbumTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     /**
      * setup albumtest with 3 albums.
@@ -109,7 +109,6 @@ class AlbumTest extends TestCase
 
         $user = factory(\App\User::class)->create();
         $updated = $this->actingAs($user, 'api')->json('PUT', 'api/albums/' . $album->id, $data);
-        // dd($updated);
         $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Album updated successfully."]);
@@ -129,7 +128,6 @@ class AlbumTest extends TestCase
 
         $user = factory(\App\User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/albums/' . $album->id);
-        // $delete->dump();
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
     }
