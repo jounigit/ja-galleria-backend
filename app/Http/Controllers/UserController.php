@@ -28,7 +28,7 @@ class UserController extends Controller
      */
     public function login(Request $request)
     {
-        $status = 401;
+        $status = 422;
         $response = ['error' => 'Unauthorised'];
 
         if (Auth::attempt($request->only(['email', 'password']))) {
@@ -41,6 +41,7 @@ class UserController extends Controller
 
         return response()->json($response, $status);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -107,6 +108,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $status = $user->delete();
+
+	return response()->json([
+            'status' => $status,
+            'message' => $status ? 'User Deleted!' : 'Error Deleting User'
+        ]);
     }
 }

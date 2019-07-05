@@ -19,6 +19,7 @@ class CreatePicturesTable extends Migration
             $table->string('title');
             $table->string('slug')->nullable();
             $table->text('content')->nullable();
+	    $table->string('image');
             $table->timestamps();
             $table->softDeletes();
 

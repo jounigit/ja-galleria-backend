@@ -13,8 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('login', 'UserController@login');
-Route::post('register', 'UserController@register');
+Route::post('login', 'Auth\LoginController@login');
+Route::post('register', 'Auth\RegisterController@register');
 Route::get('/albums','AlbumController@index');
 Route::get('/albums/{album}','AlbumController@show');
 Route::get('/categories','CategoryController@index');
@@ -23,6 +23,7 @@ Route::get('/pictures','PictureController@index');
 Route::get('/pictures/{picture}','PictureController@show');
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('logout', 'Auth\LoginController@logout');
     Route::get('/users','UserController@index');
     Route::get('users/{user}','UserController@show');
     Route::resource('/albums','AlbumController')->except(['index', 'show']);
