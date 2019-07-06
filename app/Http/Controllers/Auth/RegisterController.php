@@ -29,17 +29,17 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('guest');
+    // }
 
     /**
      * Get a validator for an incoming registration request.
@@ -62,17 +62,41 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function register(Request $request)
+    // public function register(Request $request)
+    // {
+    //     $this->validator($request->all())->validate();
+    //     $user = User::create([
+    //         'name' => $request['name'],
+    //         'email' => $request['email'],
+    //         'password' => bcrypt($request['password']),
+    //     ]);
+    //     $this->guard()->login($user);
+    //     $success['token'] = $user->createToken('JGalleria')->accessToken;
+    //     $success['user'] = $user;
+    //     return response()->json($success, 201);
+    // }
+
+        public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
-        $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => bcrypt($request['password']),
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:50',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
         ]);
-        $this->guard()->login($user);
-        $success['token'] = $user->createToken('JGalleria')->accessToken;
-        $success['user'] = $user;
-        return response()->json($success, 201);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 401);
+        }
+
+        $data = $request->only(['name', 'email', 'password']);
+        $data['password'] = bcrypt($data['password']);
+
+        $user = User::create($data);
+        $user->is_admin = 0;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $user->createToken('JGalleria')->accessToken,
+        ]);
     }
 }
