@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Picture;
 use App\User;
 
-class PictureTest extends TestCase
+class PictureControllerTest extends TestCase
 {
     use RefreshDatabase;
 

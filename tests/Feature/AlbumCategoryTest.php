@@ -55,8 +55,6 @@ class AlbumCategoryTest extends TestCase
      */
     public function testCategoryDeletes()
     {
-
-        $categories = Category::all();
         $category = Category::all()->first();
 
         // Softdelete category.
