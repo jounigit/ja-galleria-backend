@@ -6,10 +6,10 @@ use Tests\TestCase;
 use App\Category;
 use App\User;
 
-class CategoryTest extends TestCase
+class CategoryControllerTest extends TestCase
 {
     /**
-     * setup categorytest with 3 categoriess.
+     * setup categorytest with 3 categories.
      */
     public function setUp(): void
     {

@@ -8,7 +8,7 @@ use App\User;
 // use Illuminate\Foundation\Testing\WithFaker;
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class AlbumTest extends TestCase
+class AlbumControllerTest extends TestCase
 {
     // use RefreshDatabase;
 
