@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\User;
 
-class UserCOntrollerTest extends TestCase
+class UserControllerTest extends TestCase
 {
     /**
      * setup usertest with 5 users.
