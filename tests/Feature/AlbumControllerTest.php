@@ -33,19 +33,25 @@ class AlbumControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/albums');
         $response->assertStatus(200);
-        $response->assertJsonCount(3);
+
+        $this->assertEquals(3, count($response->getData()->data));
         $response->assertJsonStructure(
             [
-                [
-                    'id',
-                    'user_id',
-                    'category_id',
-                    'title',
-                    'slug',
-                    'content',
-                    'created_at',
-                    'updated_at',
-                    'deleted_at'
+                'data' => [
+                    [
+                        'id',
+                        'user_id',
+                        'category_id',
+                        'title',
+                        'slug',
+                        'content',
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ]
+                ],
+                'meta' => [
+                    'album_count'
                 ]
             ]
         );
@@ -60,13 +66,17 @@ class AlbumControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/albums');
         $response->assertStatus(200);
-        $album = $response->getData()[0];
+        $album = $response->getData()->data[0];
 
         $showAlbum = $this->json('GET', 'api/albums/' . $album->id);
 
         $showAlbum->assertStatus(200);
         $showAlbum->assertJson([
-            'id' => $album->id
+            'data' => [
+                'id' => $album->id,
+                'title' => $album->title,
+                'content' => $album->content
+            ]
         ]);
     }
 
@@ -100,7 +110,7 @@ class AlbumControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/albums');
         $response->assertStatus(200);
-        $album = $response->getData()[0];
+        $album = $response->getData()->data[0];
 
         $data = [
             'title' => 'Päivitetty albumi',
@@ -124,12 +134,11 @@ class AlbumControllerTest extends TestCase
         $response = $this->json('GET', '/api/albums');
         $response->assertStatus(200);
 
-        $album = $response->getData()[0];
+        $album = $response->getData()->data[0];
 
         $user = factory(\App\User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/albums/' . $album->id);
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
     }
-
 }

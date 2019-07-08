@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Http\Resources\AlbumResource;
+use App\Http\Resources\AlbumCollection;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
@@ -18,7 +20,8 @@ class AlbumController extends BaseController
     public function index()
     {
         $albums = Album::all();
-        return response()->json($albums);
+        return new AlbumCollection(Album::all());
+        // return response()->json($albums);
         // return $this->sendResponse($albums, 'Albums retrieved.');
     }
 
@@ -57,7 +60,7 @@ class AlbumController extends BaseController
      */
     public function show(Album $album)
     {
-        return response()->json($album, 200);
+        return new AlbumResource($album);
     }
 
     /**
