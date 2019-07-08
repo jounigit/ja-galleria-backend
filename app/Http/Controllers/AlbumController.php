@@ -19,7 +19,6 @@ class AlbumController extends BaseController
      */
     public function index()
     {
-        $albums = Album::all();
         return new AlbumCollection(Album::all());
         // return response()->json($albums);
         // return $this->sendResponse($albums, 'Albums retrieved.');

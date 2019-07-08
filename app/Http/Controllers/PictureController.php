@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Picture;
+use App\Http\Resources\PictureResource;
+use App\Http\Resources\PictureCollection;
 use Auth;
 use Illuminate\Http\Request;
 use Validator;
@@ -17,9 +19,7 @@ class PictureController extends BaseController
      */
     public function index()
     {
-        $pictures = Picture::all();
-        return response()->json($pictures, 200);
-        // return $this->sendResponse($pictures->toArray(), 'Pictures retrieved.');
+        return new PictureCollection(Picture::all());
     }
 
     /**
@@ -58,7 +58,7 @@ class PictureController extends BaseController
      */
     public function show(Picture $picture)
     {
-        return response()->json($picture, 200);
+        return new PictureResource($picture);
     }
 
     /**
