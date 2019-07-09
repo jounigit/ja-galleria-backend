@@ -19,6 +19,9 @@ class PictureResource extends JsonResource
             'title' => $this->title,
             'content' => $this->content,
             'image' => $this->image,
+            'albums' => $this->whenPivotLoaded('album_picture', function () {
+                return $this->pivot->picture_id;
+            }),
         ];
     }
 }
