@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\CategoryCollection;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
@@ -17,9 +19,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $categories = Category::all();
-        return response()->json($categories, 200);
-        // return $this->sendResponse($categories, 'Categories retrieved.');
+        return new CategoryCollection( Category::all() );
     }
 
     /**
@@ -56,7 +56,7 @@ class CategoryController extends BaseController
      */
     public function show(Category $category)
     {
-        return response()->json($category);
+        return new CategoryResource($category);
     }
 
     /**

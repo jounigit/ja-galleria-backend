@@ -31,6 +31,6 @@ class Category extends Model
      */
     public function albums()
     {
-        return $this->hasMany(Picture::class);
+        return $this->hasMany(Album::class);
     }
 }
