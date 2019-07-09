@@ -6,11 +6,11 @@ use Tests\TestCase;
 use App\Album;
 use App\User;
 // use Illuminate\Foundation\Testing\WithFaker;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AlbumControllerTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * setup albumtest with 3 albums.
@@ -65,6 +65,7 @@ class AlbumControllerTest extends TestCase
     public function testGettingAlbum()
     {
         $response = $this->json('GET', '/api/albums');
+
         $response->assertStatus(200);
         $album = $response->getData()->data[0];
 

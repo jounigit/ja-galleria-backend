@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\User;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use Validator;
 use Illuminate\Http\Request;
 
@@ -16,8 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return response()->json(User::with(['pictures'])->get());
-        // return response()->json(User::all());
+        return new UserCollection( User::all() );
     }
 
     /**
@@ -28,7 +29,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user);
+        return new UserResource($user);
     }
 
     /**

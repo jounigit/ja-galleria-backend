@@ -24,21 +24,26 @@ class UserControllerTest extends TestCase
     public function testGetAllUsers()
     {
         $user = User::all()->first();
-// dd($user);
         $response = $this->actingAs($user, 'api')->json('GET', '/api/users');
 
         $response->assertStatus(200);
-        $response->assertJsonCount(5);
+        $this->assertEquals(5, count($response->getData()->data));
+
         $response->assertJsonStructure(
             [
-                [
-                    'id',
-                    'name',
-                    'email',
-                    'email_verified_at',
-                    'created_at',
-                    'updated_at',
-                    'deleted_at'
+                'data' => [
+                    [
+                        'id',
+                        'name',
+                        'email',
+                        'email_verified_at',
+                        'created_at',
+                        'updated_at',
+                        'deleted_at',
+                    ]
+                ],
+                'meta' => [
+                    'user_count'
                 ]
             ]
         );
@@ -57,7 +62,14 @@ class UserControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'id' => $user->id
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'categories' => [],
+                'albums' => [],
+                'pictures' => []
+            ]
         ]);
     }
 }
