@@ -29,18 +29,20 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $response->assertJsonCount(3);
+        $this->assertEquals(3, count($response->getData()->data));
         $response->assertJsonStructure(
             [
-                [
-                    'id',
-                    'user_id',
-                    'title',
-                    'slug',
-                    'content',
-                    'created_at',
-                    'updated_at',
-                    'deleted_at'
+                'data' => [
+                    [
+                        'id',
+                        'user_id',
+                        'title',
+                        'slug',
+                        'content',
+                        'created_at',
+                        'updated_at',
+                        'deleted_at'
+                    ]
                 ]
             ]
         );
@@ -55,13 +57,17 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $category = $response->getData()[0];
+        $category = $response->getData()->data[0];
 
         $showcategories = $this->json('GET', 'api/categories/' . $category->id);
 
         $showcategories->assertStatus(200);
         $showcategories->assertJson([
-            'id' => $category->id
+            'data' => [
+                'id' => $category->id,
+                'title' => $category->title,
+                'content' => $category->content
+            ]
         ]);
     }
 
@@ -95,7 +101,7 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $category = $response->getData()[0];
+        $category = $response->getData()->data[0];
 
         $data = [
             'title' => 'Päivitetty category',
@@ -119,7 +125,7 @@ class CategoryControllerTest extends TestCase
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
 
-        $category = $response->getData()[0];
+        $category = $response->getData()->data[0];
 
         $user = factory(User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/categories/' . $category->id);
