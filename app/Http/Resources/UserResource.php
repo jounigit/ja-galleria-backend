@@ -18,7 +18,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'categories' => $this->categories,
+            'categories' => CategoryResource::collection($this->categories),
+            // 'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            // 'categories' => CategoryResource::collection($this->whenLoaded($this->categories)),
             'albums' => $this->albums,
             'pictures' => $this->pictures
         ];
