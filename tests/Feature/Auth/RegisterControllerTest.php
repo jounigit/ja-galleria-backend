@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 
 class RegisterControllerTest extends TestCase
@@ -20,12 +18,16 @@ class RegisterControllerTest extends TestCase
         Artisan::call('passport:install');
     }
 
-    public function testRequireEmailAndLogin()
+    /**
+     * Test name, email and password are required.
+     *
+     * @return void
+     */
+    public function testRequireNameEmailPassword()
     {
         $this->json('POST', 'api/register')
             ->assertStatus(422)
             ->assertJson([
-                'message' => 'The given data was invalid.',
                 'errors' => [
                     'name' => ['The name field is required.'],
                     'email' => ['The email field is required.'],
@@ -36,7 +38,51 @@ class RegisterControllerTest extends TestCase
     }
 
     /**
-     * A basic feature test example.
+     * Test password is required.
+     *
+     * @return void
+     */
+    public function testRequirePassword()
+    {
+        $user = [
+            'name' => 'user',
+            'email' => 'user@email.com',
+        ];
+
+        $this->json('POST', 'api/register', $user)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'password' => ['The password field is required.']
+                ]
+            ]);
+
+    }
+
+        /**
+     * Test email is required.
+     *
+     * @return void
+     */
+    public function testRequireEmail()
+    {
+        $user = [
+            'name' => 'user',
+            'password' => 'userpass',
+        ];
+
+        $this->json('POST', 'api/register', $user)
+            ->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    'email' => ['The email field is required.']
+                ]
+            ]);
+
+    }
+
+    /**
+     * Test user register success.
      *
      * @return void
      */

@@ -47,14 +47,14 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
+    // protected function validator(array $data)
+    // {
+    //     return Validator::make($data, [
+    //         'name' => ['required', 'string', 'max:255'],
+    //         'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+    //         'password' => ['required', 'string', 'min:8', 'confirmed'],
+    //     ]);
+    // }
 
     /**
      * Create a new user instance after a valid registration.
@@ -62,26 +62,12 @@ class RegisterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    // public function register(Request $request)
-    // {
-    //     $this->validator($request->all())->validate();
-    //     $user = User::create([
-    //         'name' => $request['name'],
-    //         'email' => $request['email'],
-    //         'password' => bcrypt($request['password']),
-    //     ]);
-    //     $this->guard()->login($user);
-    //     $success['token'] = $user->createToken('JGalleria')->accessToken;
-    //     $success['user'] = $user;
-    //     return response()->json($success, 201);
-    // }
-
         public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:50',
-            'email' => 'required|email',
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:50',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:6',
         ]);
 
         if ($validator->fails()) {
@@ -99,4 +85,18 @@ class RegisterController extends Controller
             'token' => $user->createToken('JGalleria')->accessToken,
         ]);
     }
+
+        // public function register(Request $request)
+    // {
+    //     $this->validator($request->all())->validate();
+    //     $user = User::create([
+    //         'name' => $request['name'],
+    //         'email' => $request['email'],
+    //         'password' => bcrypt($request['password']),
+    //     ]);
+    //     $this->guard()->login($user);
+    //     $success['token'] = $user->createToken('JGalleria')->accessToken;
+    //     $success['user'] = $user;
+    //     return response()->json($success, 201);
+    // }
 }
