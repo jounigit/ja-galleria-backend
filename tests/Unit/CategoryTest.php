@@ -3,14 +3,19 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-use App\Album;
 use App\User;
 use App\Category;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CategoryTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->category = factory(Category::class)->create([
+            'user_id' => factory(User::class)->create()->id,
+        ]);
+    }
+
     /**
      * Test Category belongs to a User.
      *
@@ -18,16 +23,14 @@ class CategoryTest extends TestCase
      */
     public function testCategoryBelongtoUser()
     {
-        $user = factory(User::class)->create();
-        $category = factory(Category::class)->create(['user_id' => $user->id]);
-        $this->assertInstanceOf(User::class, $category->user);
+        $this->assertInstanceOf(User::class, $this->category->user);
     }
 
+    /**
+     * Test Category has many albums.
+     */
     public function testCategoryHasManyAlbums()
     {
-        factory(Category::class)->create();
-
-        $category = Category::all()->last();
-        $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $category->albums);
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $this->category->albums);
     }
 }

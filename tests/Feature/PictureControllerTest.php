@@ -33,10 +33,11 @@ class PictureControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
-        $response->assertJsonCount(5);
+        $this->assertEquals(5, count($response->getData()->data));
         $response->assertJsonStructure(
             [
-                [
+                'data' => [
+                    [
                         'id',
                         'user_id',
                         'title',
@@ -46,6 +47,10 @@ class PictureControllerTest extends TestCase
                         'created_at',
                         'updated_at',
                         'deleted_at'
+                    ]
+                ],
+                'meta' => [
+                    'picture_count'
                 ]
             ]
         );
@@ -60,13 +65,18 @@ class PictureControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
-        $picture = $response->getData()[0];
+        $picture = $response->getData()->data[0];
 
         $showPicture = $this->json('GET', 'api/pictures/' . $picture->id);
 
         $showPicture->assertStatus(200);
         $showPicture->assertJson([
-            'id' => $picture->id
+            'data' => [
+                'id' => $picture->id,
+                'title' => $picture->title,
+                'content' => $picture->content,
+                'image' => $picture->image
+            ]
         ]);
     }
 
@@ -77,16 +87,16 @@ class PictureControllerTest extends TestCase
      */
     public function testCreatePicture()
     {
-       $data = [
+        $data = [
             'title' => 'Uusi kuva',
             'content' => 'Hieno kuva tulossa',
-            'image'=>'https://source.unsplash.com/random'
+            'image' => 'https://source.unsplash.com/random'
         ];
         $user = factory(User::class)->create();
 
-        $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures',$data);
+        $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures', $data);
 
-	    $response->assertStatus(200);
+        $response->assertStatus(200);
         $response->assertJson(['success' => true]);
         $response->assertJson(['message' => "Picture stored successfully."]);
         $response->assertJson(['data' => $data]);
@@ -101,18 +111,18 @@ class PictureControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
-        $picture = $response->getData()[0];
+        $picture = $response->getData()->data[0];
 
-       $data = [
+        $data = [
             'title' => 'Päivitetty kuva',
             'content' => 'Hieno päivitys',
-            'image'=>'https://source.unsplash.com/random'
+            'image' => 'https://source.unsplash.com/random'
         ];
 
         $user = factory(\App\User::class)->create();
         $updated = $this->actingAs($user, 'api')->json('PUT', 'api/pictures/' . $picture->id, $data);
 
-	    $updated->assertStatus(200);
+        $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Picture updated successfully."]);
     }
@@ -127,14 +137,12 @@ class PictureControllerTest extends TestCase
         $response = $this->json('GET', '/api/pictures');
         $response->assertStatus(200);
 
-        $picture = $response->getData()[0];
+        $picture = $response->getData()->data[0];
 
         $user = factory(\App\User::class)->create();
         $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/pictures/' . $picture->id);
 
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Picture deleted!"]);
-
     }
-
 }
