@@ -6,11 +6,18 @@ use Tests\TestCase;
 use App\Album;
 use App\User;
 use App\Category;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AlbumTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->album = factory(Album::class)->create([
+            'user_id' => factory(User::class)->create()->id,
+            'category_id' => factory(Category::class)->create()->id
+        ]);
+    }
+
     /**
      * Test Album belongs to a user.
      *
@@ -18,20 +25,24 @@ class AlbumTest extends TestCase
      */
     public function testAlbumBelongtoUser()
     {
-        $user = factory(User::class)->create();
-        $album = factory(Album::class)->create(['user_id' => $user->id]);
-        $this->assertInstanceOf(User::class, $album->user);
+        $this->assertInstanceOf(User::class, $this->album->user);
     }
 
-     /**
+    /**
      * Test Album belongs to a category.
      *
      * @return void
      */
     public function testAlbumBelongtoCategory()
     {
-        $category = factory(Category::class)->create();
-        $album = factory(Album::class)->create(['category_id' => $category->id]);
-        $this->assertInstanceOf(Category::class, $album->category);
+        $this->assertInstanceOf(Category::class, $this->album->category);
+    }
+
+     /**
+     * Test Album belongs to many pictures.
+     */
+    public function testAlbumBelongsToManyPicture()
+    {
+        $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $this->album->pictures);
     }
 }
