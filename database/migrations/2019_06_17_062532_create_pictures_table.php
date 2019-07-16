@@ -19,14 +19,15 @@ class CreatePicturesTable extends Migration
             $table->string('title');
             $table->string('slug')->nullable();
             $table->text('content')->nullable();
-	    $table->string('image');
+            $table->string('image');
+            $table->string('thumb')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('user_id')
-                    ->references('id')
-                    ->on('users')
-                    ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 
