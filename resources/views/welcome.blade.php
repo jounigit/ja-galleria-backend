@@ -80,6 +80,7 @@
             @endif
 
             <div class="content">
+                    <img src="{{ url('7/images/image-1563197479.jpg') }}">
                 <div class="title m-b-md">
                     Laravel
                 </div>
