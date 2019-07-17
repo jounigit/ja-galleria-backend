@@ -26,36 +26,6 @@ Route::get('/categories', 'CategoryController@index');
 Route::get('/categories/{category}', 'CategoryController@show');
 Route::get('/pictures', 'PictureController@index');
 Route::get('/pictures/{picture}', 'PictureController@show');
-Route::get('del', function () {
-    $del = Storage::deleteDirectory('public/7');
-    return 'Poistettu' . $del;
-});
-Route::post('upload', function (Request $request) {
-    // cache the uplaoded file
-    $uploaded_file = $request->file('image');
-
-    // generate a new filename. getClientOriginalExtension() for the file extension
-    $filename = 'image-' . time() . '.' . $uploaded_file->getClientOriginalExtension();
-
-    //Upload File
-    $uploaded_file->storeAs('public/ja/images', $filename);
-    $uploaded_file->storeAs('public/ja/thumbnails', $filename);
-
-
-    $image_path = public_path('storage/ja/images/'.$filename);
-    $thumbnail_path = public_path('storage/ja/thumbnails/'.$filename);
-    //Resize image here
-    $img = Image::make($image_path)->resize(500, 500, function($constraint) {
-        $constraint->aspectRatio();
-    });
-    $imgthumb = Image::make($thumbnail_path)->resize(200, 200, function($constraint) {
-        $constraint->aspectRatio();
-    });
-    $img->save($image_path);
-    $imgthumb->save($thumbnail_path);
-
-    dd($image_path . " - " . $thumbnail_path);
-});
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('logout', 'Auth\LoginController@logout');
