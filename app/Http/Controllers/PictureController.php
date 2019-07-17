@@ -14,6 +14,11 @@ use File;
 
 class PictureController extends BaseController
 {
+    private $upload_image;
+    private $image_dir;
+    private $thumbnail_dir;
+    private $filename;
+
     /**
      * Display a listing of the resource.
      *
@@ -31,42 +36,22 @@ class PictureController extends BaseController
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'title' => 'required|max:50',
-            'image' => 'required|image|mimes:jpeg,jpg,png,gif|max:8000',
+            'title' => 'max:50',
+            'image' => 'image|mimes:jpeg,jpg,png,gif|max:8000',
         ]);
     }
+
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param int $user_id
+     * @param mixed $image
+     * @return void
      */
-    public function store(Request $request)
+    protected function setVariables(Int $user_id, $image)
     {
-        $validator = $this->validator($request->all());
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $images_dir = Auth::id() . '/images/';
-        $thumbnails_dir = Auth::id() . '/thumbnails/';
-
-        $uploaded_file = $request->file('image');
-        $filename = 'image-' . time() . '.' . $uploaded_file->getClientOriginalExtension();
-
-        $this->handleUpload($uploaded_file, $images_dir, $thumbnails_dir, $filename);
-
-        $picture = Picture::create([
-            'user_id' => Auth::id(),
-            'title' => $request->title,
-            'slug' => str_slug($request->title),
-            'content' => $request->content,
-            'image' => $images_dir . $filename,
-            'thumb' => $thumbnails_dir . $filename
-        ]);
-
-        return $this->sendResponse($picture, 'Picture stored successfully.');
+        $this->upload_image = $image;
+        $this->image_dir = $user_id . '/images/';
+        $this->thumbnail_dir = $user_id . '/thumbnails/';
+        $this->filename = time() . '.' . $image->getClientOriginalExtension();
     }
 
     /**
@@ -104,6 +89,43 @@ class PictureController extends BaseController
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validator = $this->validator($request->all());
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $picture = new Picture;
+
+        if ($request->hasFile('image')) {
+            $this->setVariables(Auth::id(), $request->file('image'));
+
+            $this->handleUpload($this->upload_image, $this->image_dir, $this->thumbnail_dir, $this->filename);
+
+            $picture['image'] = $this->image_dir . $this->filename;
+            $picture['thumb'] = $this->thumbnail_dir . $this->filename;
+        }
+
+        $picture['user_id'] = Auth::id();
+        $picture['title'] = $request->title;
+        $picture['content'] = $request->content;
+        $picture['slug'] = str_slug($request->title);
+
+        if ( ! $picture->save()) {
+            return $this->sendError(['Picture creating failed.', 500]);
+        }
+
+        return $this->sendResponse($picture, 'Picture stored successfully.');
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \App\Picture  $picture
@@ -123,18 +145,25 @@ class PictureController extends BaseController
      */
     public function update(Request $request, Picture $picture)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'max:50',
-        ]);
+        $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $reqData = $request->all();
-        $reqData['slug'] = str_slug($request->title);
+        if ($request->hasFile('image')) {
+            $this->setVariables(Auth::id(), $request->file('image'));
 
-        $picture->update($reqData);
+            $this->handleUpload($this->upload_image, $this->image_dir, $this->thumbnail_dir, $this->filename);
+            $updateData['image'] = $this->image_dir . $this->filename;
+            $updateData['thumb'] = $this->thumbnail_dir . $this->filename;
+        }
+
+        $updateData['title'] = $request->title;
+        $updateData['content'] = $request->content;
+        $updateData['slug'] = str_slug($request->title);
+
+        $picture->update($updateData);
 
         return $this->sendResponse($picture, 'Picture updated successfully.');
     }
@@ -148,7 +177,19 @@ class PictureController extends BaseController
     public function destroy(Picture $picture)
     {
         $picture->delete();
+        if($picture->delete())
+        {
+            File::delete($picture->image, $picture->thumb);
+        }
 
         return $this->sendResponse($picture, 'Picture deleted!');
+    }
+
+    /**
+     * Remove file
+     */
+    private function removeFiles(Picture $picture)
+    {
+        return File::delete($picture->image, $picture->thumb);
     }
 }

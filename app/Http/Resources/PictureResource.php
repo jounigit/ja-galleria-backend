@@ -19,6 +19,7 @@ class PictureResource extends JsonResource
             'title' => $this->title,
             'content' => $this->content,
             'image' => $this->image,
+            'thumb' => $this->thumb
         ];
     }
 }
