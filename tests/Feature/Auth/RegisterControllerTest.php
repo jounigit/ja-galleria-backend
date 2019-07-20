@@ -200,4 +200,5 @@ class RegisterControllerTest extends TestCase
                 ]
             ]);
     }
+
 }

@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use App\Picture;
 use App\User;
+use File;
 
 class PictureControllerTest extends TestCase
 {
@@ -44,6 +47,7 @@ class PictureControllerTest extends TestCase
                         'slug',
                         'content',
                         'image',
+                        'thumb',
                         'created_at',
                         'updated_at',
                         'deleted_at'
@@ -89,17 +93,28 @@ class PictureControllerTest extends TestCase
     {
         $data = [
             'title' => 'Uusi kuva',
-            'content' => 'Hieno kuva tulossa',
-            'image' => 'https://source.unsplash.com/random'
+            'image' => UploadedFile::fake()->image('random.jpg')
         ];
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures', $data);
-
+        // dd('ID:: ' . DB::table('users')->latest('id')->first());
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
         $response->assertJson(['message' => "Picture stored successfully."]);
-        $response->assertJson(['data' => $data]);
+        $response->assertJsonStructure([
+            'data' => [
+                'id',
+                'user_id',
+                'title',
+                'slug',
+                'content',
+                'image',
+                'thumb',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
     }
 
     /**
@@ -116,7 +131,7 @@ class PictureControllerTest extends TestCase
         $data = [
             'title' => 'Päivitetty kuva',
             'content' => 'Hieno päivitys',
-            'image' => 'https://source.unsplash.com/random'
+            'image' => UploadedFile::fake()->image('random.jpg')
         ];
 
         $user = factory(\App\User::class)->create();

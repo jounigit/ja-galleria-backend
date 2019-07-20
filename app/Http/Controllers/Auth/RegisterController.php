@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use File;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -54,17 +55,4 @@ class RegisterController extends Controller
         ]);
     }
 
-        // public function register(Request $request)
-    // {
-    //     $this->validator($request->all())->validate();
-    //     $user = User::create([
-    //         'name' => $request['name'],
-    //         'email' => $request['email'],
-    //         'password' => bcrypt($request['password']),
-    //     ]);
-    //     $this->guard()->login($user);
-    //     $success['token'] = $user->createToken('JGalleria')->accessToken;
-    //     $success['user'] = $user;
-    //     return response()->json($success, 201);
-    // }
 }

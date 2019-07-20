@@ -49,8 +49,8 @@ class PictureController extends BaseController
     protected function setVariables(Int $user_id, $image)
     {
         $this->upload_image = $image;
-        $this->image_dir = $user_id . '/images/';
-        $this->thumbnail_dir = $user_id . '/thumbnails/';
+        $this->image_dir = public_path($user_id . '/images/');
+        $this->thumbnail_dir = public_path($user_id . '/thumbnails/');
         $this->filename = time() . '.' . $image->getClientOriginalExtension();
     }
 
@@ -63,12 +63,15 @@ class PictureController extends BaseController
      */
     private function handleUpload($upload, $images_dir, $thumbnails_dir, $filename)
     {
-        if (!File::exists($images_dir)) {
-            File::makeDirectory(public_path($images_dir), 0777, true);
+        if (!File::isDirectory($images_dir) ) {
+            File::makeDirectory($images_dir, 0777, true);
         }
-        if (!File::exists($thumbnails_dir)) {
-            File::makeDirectory(public_path($thumbnails_dir), 0777, true);
+        if (!File::isDirectory($thumbnails_dir) ) {
+            File::makeDirectory($thumbnails_dir, 0777, true);
         }
+        // if ((!File::exists($thumbnails_dir)) && (!is_dir($thumbnails_dir))) {
+        //     File::makeDirectory(public_path($thumbnails_dir), 0777, true);
+        // }
 
         //Resize image here
         $this->resizeImage($images_dir . $filename, $upload, 600);
@@ -111,6 +114,9 @@ class PictureController extends BaseController
 
             $picture['image'] = $this->image_dir . $this->filename;
             $picture['thumb'] = $this->thumbnail_dir . $this->filename;
+        } else {
+            $picture['image'] = 'default.jpg';
+            $picture['thumb'] = 'default.jpg';
         }
 
         $picture['user_id'] = Auth::id();
@@ -118,7 +124,7 @@ class PictureController extends BaseController
         $picture['content'] = $request->content;
         $picture['slug'] = str_slug($request->title);
 
-        if ( ! $picture->save()) {
+        if (!$picture->save()) {
             return $this->sendError(['Picture creating failed.', 500]);
         }
 
@@ -176,9 +182,8 @@ class PictureController extends BaseController
      */
     public function destroy(Picture $picture)
     {
-        $picture->delete();
-        if($picture->delete())
-        {
+        // $picture->delete();
+        if ($picture->delete()) {
             File::delete($picture->image, $picture->thumb);
         }
 
