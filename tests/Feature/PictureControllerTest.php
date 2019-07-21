@@ -6,7 +6,6 @@ use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use App\Picture;
 use App\User;
 use File;
@@ -95,10 +94,11 @@ class PictureControllerTest extends TestCase
             'title' => 'Uusi kuva',
             'image' => UploadedFile::fake()->image('random.jpg')
         ];
+        factory(User::class, 1000)->create();
         $user = factory(User::class)->create();
 
         $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures', $data);
-        // dd('ID:: ' . DB::table('users')->latest('id')->first());
+
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
         $response->assertJson(['message' => "Picture stored successfully."]);
@@ -115,6 +115,10 @@ class PictureControllerTest extends TestCase
                 'updated_at'
             ]
         ]);
+        // delete user's folder and all subfolders.
+        $delete_dir = File::deleteDirectory(public_path($user->id));
+        // assert directory deleting is true
+        $this->assertTrue($delete_dir);
     }
 
     /**
@@ -134,12 +138,17 @@ class PictureControllerTest extends TestCase
             'image' => UploadedFile::fake()->image('random.jpg')
         ];
 
-        $user = factory(\App\User::class)->create();
+        $user = User::find($picture->user_id);
+        // dd($user);
         $updated = $this->actingAs($user, 'api')->json('PUT', 'api/pictures/' . $picture->id, $data);
 
         $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Picture updated successfully."]);
+        // delete user's folder and all subfolders.
+        $delete_dir = File::deleteDirectory(public_path($user->id));
+        // assert directory deleting is true
+        $this->assertTrue($delete_dir);
     }
 
     /**
@@ -149,15 +158,30 @@ class PictureControllerTest extends TestCase
      */
     public function testDeletePicture()
     {
-        $response = $this->json('GET', '/api/pictures');
+        $data = [
+            'title' => 'Uusi kuva',
+            'image' => UploadedFile::fake()->image('random.jpg')
+        ];
+        factory(User::class, 1000)->create();
+        $user = factory(User::class)->create();
+        // makes new directories for the user and uploads the pictures in them.
+        $response = $this->actingAs($user, 'api')->json('POST', '/api/pictures', $data);
+
         $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+        $response->assertJson(['message' => "Picture stored successfully."]);
+        $picture = $response->getData()->data;
 
-        $picture = $response->getData()->data[0];
+        $deleted = $this->actingAs($user, 'api')->json('DELETE', '/api/pictures/' . $picture->id);
 
-        $user = factory(\App\User::class)->create();
-        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/pictures/' . $picture->id);
-
-        $delete->assertStatus(200);
-        $delete->assertJson(['message' => "Picture deleted!"]);
+        $deleted->assertStatus(200);
+        $deleted->assertJson(['message' => "Picture deleted!"]);
+        // assert the pictures has deleted from folders.
+        $this->assertFileNotExists($picture->image);
+        $this->assertFileNotExists($picture->thumb);
+        // delete user's folder and all subfolders.
+        $delete_dir = File::deleteDirectory(public_path($user->id));
+        // assert directory deleting is true
+        $this->assertTrue($delete_dir);
     }
 }

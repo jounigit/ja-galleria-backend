@@ -17,7 +17,8 @@ class PictureController extends BaseController
     private $upload_image;
     private $image_dir;
     private $thumbnail_dir;
-    private $filename;
+    private $image_path;
+    private $thumbnail_path;
 
     /**
      * Display a listing of the resource.
@@ -27,6 +28,17 @@ class PictureController extends BaseController
     public function index()
     {
         return new PictureCollection(Picture::all());
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Picture  $picture
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Picture $picture)
+    {
+        return new PictureResource($picture);
     }
 
     /**
@@ -46,36 +58,35 @@ class PictureController extends BaseController
      * @param mixed $image
      * @return void
      */
-    protected function setVariables(Int $user_id, $image)
+    protected function setProperties(Int $user_id, $image)
     {
+        $new_filename = time() . '.' . $image->getClientOriginalExtension();
+        $image_dir = public_path($user_id . '/images/');
+        $thumbnail_dir = public_path($user_id . '/thumbnails/');
         $this->upload_image = $image;
-        $this->image_dir = public_path($user_id . '/images/');
-        $this->thumbnail_dir = public_path($user_id . '/thumbnails/');
-        $this->filename = time() . '.' . $image->getClientOriginalExtension();
+        $this->image_dir = $image_dir;
+        $this->thumbnail_dir = $thumbnail_dir;
+        $this->image_path = $image_dir . $new_filename;
+        $this->thumbnail_path = $thumbnail_dir . $new_filename;
     }
 
     /**
-     * @param mixed $upload
-     * @param mixed $images_dir
-     * @param mixed $thumbnails_dir
-     * @param mixed $filename
+     * Handle uploaded image. Make the directories for user and save the resized images.
+     *
      * @return void
      */
-    private function handleUpload($upload, $images_dir, $thumbnails_dir, $filename)
+    private function handleUpload()
     {
-        if (!File::isDirectory($images_dir) ) {
-            File::makeDirectory($images_dir, 0777, true);
+        if (!File::isDirectory($this->image_dir)) {
+            File::makeDirectory($this->image_dir, 0777, true);
         }
-        if (!File::isDirectory($thumbnails_dir) ) {
-            File::makeDirectory($thumbnails_dir, 0777, true);
+        if (!File::isDirectory($this->thumbnail_dir)) {
+            File::makeDirectory($this->thumbnail_dir, 0777, true);
         }
-        // if ((!File::exists($thumbnails_dir)) && (!is_dir($thumbnails_dir))) {
-        //     File::makeDirectory(public_path($thumbnails_dir), 0777, true);
-        // }
 
         //Resize image here
-        $this->resizeImage($images_dir . $filename, $upload, 600);
-        $this->resizeImage($thumbnails_dir . $filename, $upload, 200);
+        $this->resizeImage($this->image_path, $this->upload_image, 600);
+        $this->resizeImage($this->thumbnail_path, $this->upload_image, 200);
     }
 
     /**
@@ -108,12 +119,13 @@ class PictureController extends BaseController
         $picture = new Picture;
 
         if ($request->hasFile('image')) {
-            $this->setVariables(Auth::id(), $request->file('image'));
+            // set class properties.
+            $this->setProperties(Auth::id(), $request->file('image'));
 
-            $this->handleUpload($this->upload_image, $this->image_dir, $this->thumbnail_dir, $this->filename);
+            $this->handleUpload();
 
-            $picture['image'] = $this->image_dir . $this->filename;
-            $picture['thumb'] = $this->thumbnail_dir . $this->filename;
+            $picture['image'] = $this->image_path;
+            $picture['thumb'] = $this->thumbnail_path;
         } else {
             $picture['image'] = 'default.jpg';
             $picture['thumb'] = 'default.jpg';
@@ -132,17 +144,6 @@ class PictureController extends BaseController
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Picture  $picture
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Picture $picture)
-    {
-        return new PictureResource($picture);
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -158,11 +159,12 @@ class PictureController extends BaseController
         }
 
         if ($request->hasFile('image')) {
-            $this->setVariables(Auth::id(), $request->file('image'));
+            // set class properties.
+            $this->setProperties(Auth::id(), $request->file('image'));
 
-            $this->handleUpload($this->upload_image, $this->image_dir, $this->thumbnail_dir, $this->filename);
-            $updateData['image'] = $this->image_dir . $this->filename;
-            $updateData['thumb'] = $this->thumbnail_dir . $this->filename;
+            $this->handleUpload();
+            $updateData['image'] = $this->image_path;
+            $updateData['thumb'] = $this->thumbnail_path;
         }
 
         $updateData['title'] = $request->title;
@@ -183,18 +185,10 @@ class PictureController extends BaseController
     public function destroy(Picture $picture)
     {
         // $picture->delete();
-        if ($picture->delete()) {
+        if ($picture->forceDelete()) {
             File::delete($picture->image, $picture->thumb);
         }
 
         return $this->sendResponse($picture, 'Picture deleted!');
-    }
-
-    /**
-     * Remove file
-     */
-    private function removeFiles(Picture $picture)
-    {
-        return File::delete($picture->image, $picture->thumb);
     }
 }
