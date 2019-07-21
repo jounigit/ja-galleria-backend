@@ -41,7 +41,22 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'title' => 'max:50',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $data = $request->all();
+
+        $status = $user->update($data);
+
+        return response()->json([
+            'status' => $status,
+            'message' => $status ? 'User updated!' : 'Error updating User'
+        ]);
     }
 
     /**
@@ -52,7 +67,9 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $status = $user->delete();
+        if( $user->id === Auth::id() ) {
+            $status = $user->delete();
+        }
 
 	return response()->json([
             'status' => $status,

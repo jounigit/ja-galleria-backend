@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
+// use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route;
+
 // Tässä on vikaa
 // use Illuminate\Routing\Route;
 // Käytä tätä
@@ -29,8 +32,9 @@ Route::get('/pictures/{picture}', 'PictureController@show');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('logout', 'Auth\LoginController@logout');
-    Route::get('/users', 'UserController@index');
-    Route::get('users/{user}', 'UserController@show');
+    Route::resource('/users', 'UserController');
+    // Route::get('/users', 'UserController@index');
+    // Route::get('users/{user}', 'UserController@show');
     Route::resource('/albums', 'AlbumController')->except(['index', 'show']);
     Route::resource('/categories', 'CategoryController')->except(['index', 'show']);
     Route::resource('/pictures', 'PictureController')->except(['index', 'show']);

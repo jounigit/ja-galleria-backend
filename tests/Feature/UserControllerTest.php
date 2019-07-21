@@ -72,4 +72,37 @@ class UserControllerTest extends TestCase
             ]
         ]);
     }
+
+    /**
+     * Test updating user.
+     *
+     * @return void
+     */
+    public function testUpdateUser()
+    {
+        $user = User::all()->first();
+
+        $data = [
+            'name' => 'Herra Isoherra'
+        ];
+
+        $response = $this->actingAs($user, 'api')->json('PUT', 'api/users/' . $user->id, $data);
+        $response->assertStatus(200);
+        $user = User::find($user->id);
+        $this->assertEquals('Herra Isoherra', $user->name);
+    }
+
+    /**
+     * Test deleting the user.
+     *
+     * @return void
+     */
+    public function testDeleteUser()
+    {
+        $user = User::all()->first();
+        // dd($user);
+        $response = $this->actingAs($user, 'api')->json('DELETE', 'api/users/' . $user->id);
+// dd($response);
+        $response->assertStatus(200);
+    }
 }
