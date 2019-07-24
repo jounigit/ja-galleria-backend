@@ -81,7 +81,7 @@
 
             <div class="content">
                     <?php echo public_path(7); ?><br>
-                    <?php echo Storage::directories(directory); ?><br>
+                    
                     <img src="{{ url('7/images/image-1563197479.jpg') }}">
                 <div class="title m-b-md">
                     Laravel
