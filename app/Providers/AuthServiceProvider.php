@@ -5,6 +5,12 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;
+use App\Album;
+use App\Category;
+use App\Picture;
+use App\Policies\AlbumPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\PicturePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,6 +21,9 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
+        Album::class => AlbumPolicy::class,
+        Category::class => CategoryPolicy::class,
+        Picture::class => PicturePolicy::class,
     ];
 
     /**

@@ -54,20 +54,40 @@ class PictureController extends BaseController
     }
 
     /**
-     * @param int $user_id
      * @param mixed $image
      * @return void
      */
-    protected function setProperties(Int $user_id, $image)
+    protected function setImageProperties($image)
     {
         $new_filename = time() . '.' . $image->getClientOriginalExtension();
+        $this->upload_image = $image;
+        $this->image_path = $this->image_dir . $new_filename;
+        $this->thumbnail_path = $this->thumbnail_dir . $new_filename;
+    }
+
+    /**
+     * @param int $user_id
+     * @return void
+     */
+    protected function setDirectoryProperties(Int $user_id)
+    {
         $image_dir = public_path($user_id . '/images/');
         $thumbnail_dir = public_path($user_id . '/thumbnails/');
-        $this->upload_image = $image;
         $this->image_dir = $image_dir;
         $this->thumbnail_dir = $thumbnail_dir;
-        $this->image_path = $image_dir . $new_filename;
-        $this->thumbnail_path = $thumbnail_dir . $new_filename;
+    }
+
+    private function createDirectory($dir)
+    {
+        if (!File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0777, true);
+        }
+    }
+
+    private function createDirectories()
+    {
+        $this->createDirectory($this->image_dir);
+        $this->createDirectory($this->thumbnail_dir);
     }
 
     /**
@@ -77,12 +97,12 @@ class PictureController extends BaseController
      */
     private function handleUpload()
     {
-        if (!File::isDirectory($this->image_dir)) {
-            File::makeDirectory($this->image_dir, 0777, true);
-        }
-        if (!File::isDirectory($this->thumbnail_dir)) {
-            File::makeDirectory($this->thumbnail_dir, 0777, true);
-        }
+        // if (!File::isDirectory($this->image_dir)) {
+        //     File::makeDirectory($this->image_dir, 0777, true);
+        // }
+        // if (!File::isDirectory($this->thumbnail_dir)) {
+        //     File::makeDirectory($this->thumbnail_dir, 0777, true);
+        // }
 
         //Resize image here
         $this->resizeImage($this->image_path, $this->upload_image, 600);
@@ -116,12 +136,17 @@ class PictureController extends BaseController
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
+        // set class properties.
+        $this->setDirectoryProperties(Auth::id());
+        // create directories for user's pictures.
+        $this->createDirectories();
+
         $picture = new Picture;
 
         if ($request->hasFile('image')) {
             // set class properties.
-            $this->setProperties(Auth::id(), $request->file('image'));
-
+            $this->setImageProperties($request->file('image'));
+            // make thumbnail, resize and save pictures.
             $this->handleUpload();
 
             $picture['image'] = $this->image_path;
@@ -152,6 +177,8 @@ class PictureController extends BaseController
      */
     public function update(Request $request, Picture $picture)
     {
+        $this->authorize('update', $picture);
+
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
@@ -160,9 +187,12 @@ class PictureController extends BaseController
 
         if ($request->hasFile('image')) {
             // set class properties.
-            $this->setProperties(Auth::id(), $request->file('image'));
-
+            $this->setDirectoryProperties(Auth::id());
+            $this->createDirectories();
+            $this->setImageProperties($request->file('image'));
+            // make thumbnail, resize and save pictures.
             $this->handleUpload();
+
             $updateData['image'] = $this->image_path;
             $updateData['thumb'] = $this->thumbnail_path;
         }
@@ -184,11 +214,13 @@ class PictureController extends BaseController
      */
     public function destroy(Picture $picture)
     {
-        // $picture->delete();
+        $this->authorize('delete', $picture);
+
         if ($picture->forceDelete()) {
             File::delete($picture->image, $picture->thumb);
         }
 
         return $this->sendResponse($picture, 'Picture deleted!');
     }
+
 }

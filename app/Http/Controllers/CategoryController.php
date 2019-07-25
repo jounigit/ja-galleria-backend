@@ -68,6 +68,8 @@ class CategoryController extends BaseController
      */
     public function update(Request $request, Category $category)
     {
+        $this->authorize('update', $category);
+
         $validator = Validator::make($request->all(), [
             'title' => 'required|max:25',
         ]);
@@ -92,6 +94,7 @@ class CategoryController extends BaseController
      */
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
         $category->delete();
 
         return $this->sendResponse($category, 'Category deleted!');

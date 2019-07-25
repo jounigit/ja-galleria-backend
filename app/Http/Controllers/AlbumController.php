@@ -71,6 +71,8 @@ class AlbumController extends BaseController
      */
     public function update(Request $request, Album $album)
     {
+        $this->authorize('update', $album);
+
         $validator = Validator::make($request->all(), [
             'title' => 'max:50',
         ]);
@@ -95,6 +97,7 @@ class AlbumController extends BaseController
      */
     public function destroy(Album $album)
     {
+        $this->authorize('delete', $album);
         $album->delete();
 
         return $this->sendResponse($album, 'Album deleted!');

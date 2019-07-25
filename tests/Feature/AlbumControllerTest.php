@@ -5,12 +5,11 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Album;
 use App\User;
-// use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AlbumControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    private $userCreator;
+    private $userNotCreator;
 
     /**
      * setup albumtest with 3 albums.
@@ -18,7 +17,9 @@ class AlbumControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->userNotCreator = factory(User::class)->create();
         $user = factory(User::class)->create();
+        $this->userCreator = $user;
         factory(Album::class, 3)->create([
             'user_id' => $user->id
         ]);
@@ -92,7 +93,7 @@ class AlbumControllerTest extends TestCase
             'title' => 'Uusi albumi',
             'content' => 'Hieno sisältö'
         ];
-        $user = factory(\App\User::class)->create();
+        $user = factory(User::class)->create();
 
         $response = $this->actingAs($user, 'api')->json('POST', '/api/albums', $data);
 
@@ -118,11 +119,31 @@ class AlbumControllerTest extends TestCase
             'content' => 'Hieno päivitys'
         ];
 
-        $user = factory(\App\User::class)->create();
-        $updated = $this->actingAs($user, 'api')->json('PUT', 'api/albums/' . $album->id, $data);
+        $updated = $this->actingAs($this->userCreator, 'api')->json('PUT', 'api/albums/' . $album->id, $data);
         $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Album updated successfully."]);
+    } /**/
+
+    /**
+     * Test updating album.
+     *
+     * @return void
+     */
+    public function testUpdateWithOutPermission()
+    {
+        $response = $this->json('GET', '/api/albums');
+        $response->assertStatus(200);
+        $album = $response->getData()->data[0];
+
+        $data = [
+            'title' => 'Päivitetty albumi',
+            'content' => 'Hieno päivitys'
+        ];
+
+        $updated = $this->actingAs($this->userNotCreator, 'api')->json('PUT', 'api/albums/' . $album->id, $data);
+        $updated->assertStatus(403);
+        $updated->assertJson(['message' => "This action is unauthorized."]);
     } /**/
 
     /**
@@ -137,9 +158,26 @@ class AlbumControllerTest extends TestCase
 
         $album = $response->getData()->data[0];
 
-        $user = factory(\App\User::class)->create();
-        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/albums/' . $album->id);
+        $delete = $this->actingAs($this->userCreator, 'api')->json('DELETE', '/api/albums/' . $album->id);
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Album deleted!"]);
+    }
+
+        /**
+     * Test deleting the Album.
+     *
+     * @return void
+     */
+    public function testDeleteWithOutPermission()
+    {
+        $response = $this->json('GET', '/api/albums');
+        $response->assertStatus(200);
+
+        $album = $response->getData()->data[0];
+
+        $userNotCreater = factory(User::class)->create();
+        $delete = $this->actingAs($userNotCreater, 'api')->json('DELETE', '/api/albums/' . $album->id);
+        $delete->assertStatus(403);
+        $delete->assertJson(['message' => "This action is unauthorized."]);
     }
 }

@@ -8,13 +8,18 @@ use App\User;
 
 class CategoryControllerTest extends TestCase
 {
+    private $userCreator;
+    private $userNotCreator;
+
     /**
      * setup categorytest with 3 categories.
      */
     public function setUp(): void
     {
         parent::setUp();
+        $this->userNotCreator = factory(User::class)->create();
         $user = factory(User::class)->create();
+        $this->userCreator = $user;
         factory(Category::class, 3)->create([
             'user_id' => $user->id
         ]);
@@ -108,12 +113,50 @@ class CategoryControllerTest extends TestCase
             'content' => 'Hieno päivitys'
         ];
 
-        $user = factory(User::class)->create();
-        $updated = $this->actingAs($user, 'api')->json('PUT', 'api/categories/' . $category->id, $data);
+        $updated = $this->actingAs($this->userCreator, 'api')->json('PUT', 'api/categories/' . $category->id, $data);
         $updated->assertStatus(200);
         $updated->assertJson(['success' => true]);
         $updated->assertJson(['message' => "Category updated successfully."]);
     } /**/
+
+
+    /**
+     * Test updating without permission.
+     *
+     * @return void
+     */
+    public function testUpdateWithOutPermission()
+    {
+        $response = $this->json('GET', '/api/categories');
+        $response->assertStatus(200);
+        $category = $response->getData()->data[0];
+
+        $data = [
+            'title' => 'Päivitetty category',
+            'content' => 'Hieno päivitys'
+        ];
+
+        $updated = $this->actingAs($this->userNotCreator, 'api')->json('PUT', 'api/categories/' . $category->id, $data);
+        $updated->assertStatus(403);
+        $updated->assertJson(['message' =>  "This action is unauthorized."]);
+    }
+
+        /**
+     * Test deleting the user is unauthorized.
+     *
+     * @return void
+     */
+    public function testDeleteUnauthorized()
+    {
+        $response = $this->json('GET', '/api/categories');
+        $response->assertStatus(200);
+
+        $category = $response->getData()->data[0];
+
+        $delete = $this->actingAs($this->userNotCreator, 'api')->json('DELETE', '/api/categories/' . $category->id);
+        $delete->assertStatus(403);
+        $delete->assertJson(['message' =>  "This action is unauthorized."]);
+    }
 
     /**
      * Test deleting the category.
@@ -127,8 +170,7 @@ class CategoryControllerTest extends TestCase
 
         $category = $response->getData()->data[0];
 
-        $user = factory(User::class)->create();
-        $delete = $this->actingAs($user, 'api')->json('DELETE', '/api/categories/' . $category->id);
+        $delete = $this->actingAs($this->userCreator, 'api')->json('DELETE', '/api/categories/' . $category->id);
         $delete->assertStatus(200);
         $delete->assertJson(['message' => "Category deleted!"]);
     }
