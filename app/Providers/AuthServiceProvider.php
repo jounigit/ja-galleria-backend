@@ -8,9 +8,11 @@ use Laravel\Passport\Passport;
 use App\Album;
 use App\Category;
 use App\Picture;
+use App\User;
 use App\Policies\AlbumPolicy;
 use App\Policies\CategoryPolicy;
 use App\Policies\PicturePolicy;
+use App\Policies\UserPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         Album::class => AlbumPolicy::class,
         Category::class => CategoryPolicy::class,
         Picture::class => PicturePolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**

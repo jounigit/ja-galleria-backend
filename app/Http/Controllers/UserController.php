@@ -41,11 +41,13 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+
         $validator = Validator::make($request->all(), [
             'title' => 'max:50',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
@@ -67,11 +69,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if( $user->id === Auth::id() ) {
-            $status = $user->delete();
-        }
+        $this->authorize('delete', $user);
 
-	return response()->json([
+        $status = $user->delete();
+
+        return response()->json([
             'status' => $status,
             'message' => $status ? 'User Deleted!' : 'Error Deleting User'
         ]);

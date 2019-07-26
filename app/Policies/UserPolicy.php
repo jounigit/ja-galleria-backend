@@ -3,10 +3,9 @@
 namespace App\Policies;
 
 use App\User;
-use App\Album;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class AlbumPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -18,7 +17,7 @@ class AlbumPolicy
     }
 
     /**
-     * Determine whether the user can view any albums.
+     * Determine whether the user can view any models.
      *
      * @param  \App\User  $user
      * @return mixed
@@ -29,19 +28,19 @@ class AlbumPolicy
     }
 
     /**
-     * Determine whether the user can view the album.
+     * Determine whether the user can view the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Album  $album
+     * @param  \App\User  $model
      * @return mixed
      */
-    public function view(User $user, Album $album)
+    public function view(User $user, User $model)
     {
         //
     }
 
     /**
-     * Determine whether the user can create albums.
+     * Determine whether the user can create models.
      *
      * @param  \App\User  $user
      * @return mixed
@@ -52,49 +51,49 @@ class AlbumPolicy
     }
 
     /**
-     * Determine whether the user can update the album.
+     * Determine whether the user can update the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Album  $album
+     * @param  \App\User  $model
      * @return mixed
      */
-    public function update(User $user, Album $album)
+    public function update(User $user, User $model)
     {
-        return $user->id === $album->user_id;
+        return $user->id === $model->id;
     }
 
     /**
-     * Determine whether the user can delete the album.
+     * Determine whether the user can delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Album  $album
+     * @param  \App\User  $model
      * @return mixed
      */
-    public function delete(User $user, Album $album)
+    public function delete(User $user, User $model)
     {
-        return $user->id === $album->user_id;
+        return $user->id === $model->id;
     }
 
     /**
-     * Determine whether the user can restore the album.
+     * Determine whether the user can restore the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Album  $album
+     * @param  \App\User  $model
      * @return mixed
      */
-    public function restore(User $user, Album $album)
+    public function restore(User $user, User $model)
     {
         //
     }
 
     /**
-     * Determine whether the user can permanently delete the album.
+     * Determine whether the user can permanently delete the model.
      *
      * @param  \App\User  $user
-     * @param  \App\Album  $album
+     * @param  \App\User  $model
      * @return mixed
      */
-    public function forceDelete(User $user, Album $album)
+    public function forceDelete(User $user, User $model)
     {
         //
     }

@@ -10,6 +10,13 @@ class PicturePolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability)
+    {
+        if ($user->is_admin) {
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view any pictures.
      *
