@@ -21,6 +21,7 @@ class AlbumResource extends JsonResource
             'content' => $this->content,
             'user' => $this->user,
             'category' => $this->category,
+	    'pictures' => $this->pictures,
         ];
     }
 }

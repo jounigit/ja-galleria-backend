@@ -19,7 +19,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        return new CategoryCollection( Category::all() );
+        return Category::with('user', 'albums')->get();
     }
 
     /**
@@ -45,7 +45,9 @@ class CategoryController extends BaseController
             'content' => $request->content,
         ]);
 
-        return $this->sendResponse($category, 'Category stored successfully.');
+	$newCategory = new CategoryResource($category);
+
+        return $this->sendResponse($newCategory, 'Category stored successfully.');
     }
 
     /**
@@ -83,7 +85,9 @@ class CategoryController extends BaseController
 
         $category->update($reqData);
 
-        return $this->sendResponse($category, 'Category updated successfully.');
+	    $updatedCategory = new CategoryResource($category);
+
+        return $this->sendResponse($updatedCategory, 'Category updated successfully.');
     }
 
     /**

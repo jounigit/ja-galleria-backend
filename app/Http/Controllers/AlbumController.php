@@ -19,7 +19,7 @@ class AlbumController extends BaseController
      */
     public function index()
     {
-        return new AlbumCollection(Album::all());
+        return Album::with('user', 'pictures')->get();
         // return response()->json($albums);
         // return $this->sendResponse($albums, 'Albums retrieved.');
     }
@@ -48,7 +48,9 @@ class AlbumController extends BaseController
             'content' => $request->content,
         ]);
 
-        return $this->sendResponse($album, 'Album stored successfully.');
+	$newAlbum = new AlbumResource($album);
+
+        return $this->sendResponse($newAlbum, 'Album stored successfully.');
     }
 
     /**
@@ -86,7 +88,9 @@ class AlbumController extends BaseController
 
         $album->update($reqData);
 
-        return $this->sendResponse($album, 'Album updated successfully.');
+	$updatedAlbum = new AlbumResource($album);
+
+        return $this->sendResponse($updatedAlbum, 'Album updated successfully.');
     }
 
     /**
