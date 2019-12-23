@@ -19,6 +19,10 @@ class PictureController extends BaseController
     private $thumbnail_dir;
     private $image_path;
     private $thumbnail_path;
+    private $images_url;
+    private $thumbnails_url;
+    private $image_url;
+    private $thumbnail_url;
 
     /**
      * Display a listing of the resource.
@@ -63,6 +67,8 @@ class PictureController extends BaseController
         $this->upload_image = $image;
         $this->image_path = $this->image_dir . $new_filename;
         $this->thumbnail_path = $this->thumbnail_dir . $new_filename;
+	$this->image_url = $this->images_url . $new_filename;
+        $this->thumbnail_url = $this->thumbnails_url . $new_filename;
     }
 
     /**
@@ -75,6 +81,8 @@ class PictureController extends BaseController
         $thumbnail_dir = public_path($user_id . '/thumbnails/');
         $this->image_dir = $image_dir;
         $this->thumbnail_dir = $thumbnail_dir;
+	$this->images_url = 'http://localhost:8000/' .$user_id . '/images/';
+        $this->thumbnails_url = 'http://localhost:8000/' .$user_id . '/thumbnails/';
     }
 
     private function createDirectory($dir)
@@ -149,8 +157,8 @@ class PictureController extends BaseController
             // make thumbnail, resize and save pictures.
             $this->handleUpload();
 
-            $picture['image'] = $this->image_path;
-            $picture['thumb'] = $this->thumbnail_path;
+            $picture['image'] = $this->image_url;
+            $picture['thumb'] = $this->thumbnail_url;
         } else {
             $picture['image'] = 'default.jpg';
             $picture['thumb'] = 'default.jpg';
