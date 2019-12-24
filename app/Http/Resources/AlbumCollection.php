@@ -16,7 +16,6 @@ class AlbumCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'meta' => ['album_count' => $this->collection->count()],
         ];
     }
 }

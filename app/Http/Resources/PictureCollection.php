@@ -16,7 +16,6 @@ class PictureCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'meta' => ['picture_count' => $this->collection->count()],
         ];
     }
 }

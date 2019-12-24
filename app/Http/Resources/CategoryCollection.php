@@ -16,7 +16,6 @@ class CategoryCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'meta' => ['category_count' => $this->collection->count()],
         ];
     }
 }
