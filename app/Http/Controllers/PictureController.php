@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Picture;
 use App\Http\Resources\PictureResource;
 use App\Http\Resources\PictureCollection;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Validator;
 use App\Http\Controllers\BaseController;
 use Intervention\Image\Facades\Image;
-use File;
+use Illuminate\Support\Facades\File;
 
 class PictureController extends BaseController
 {
@@ -23,6 +23,7 @@ class PictureController extends BaseController
     private $thumbnails_url;
     private $image_url;
     private $thumbnail_url;
+    private $new_filename;
 
     /**
      * Display a listing of the resource.
@@ -52,7 +53,6 @@ class PictureController extends BaseController
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'title' => 'max:50',
             'image' => 'image|mimes:jpeg,jpg,png,gif|max:8000',
         ]);
     }
@@ -63,12 +63,12 @@ class PictureController extends BaseController
      */
     protected function setImageProperties($image)
     {
-        $new_filename = time() . '.' . $image->getClientOriginalExtension();
+        $this->new_filename = time() . '.' . $image->getClientOriginalExtension();
         $this->upload_image = $image;
-        $this->image_path = $this->image_dir . $new_filename;
-        $this->thumbnail_path = $this->thumbnail_dir . $new_filename;
-	$this->image_url = $this->images_url . $new_filename;
-        $this->thumbnail_url = $this->thumbnails_url . $new_filename;
+        $this->image_path = $this->image_dir . $this->new_filename;
+        $this->thumbnail_path = $this->thumbnail_dir . $this->new_filename;
+	    $this->image_url = $this->images_url . $this->new_filename;
+        $this->thumbnail_url = $this->thumbnails_url . $this->new_filename;
     }
 
     /**
@@ -81,7 +81,7 @@ class PictureController extends BaseController
         $thumbnail_dir = public_path($user_id . '/thumbnails/');
         $this->image_dir = $image_dir;
         $this->thumbnail_dir = $thumbnail_dir;
-	$this->images_url = 'http://localhost:8000/' .$user_id . '/images/';
+	    $this->images_url = 'http://localhost:8000/' .$user_id . '/images/';
         $this->thumbnails_url = 'http://localhost:8000/' .$user_id . '/thumbnails/';
     }
 
@@ -105,13 +105,6 @@ class PictureController extends BaseController
      */
     private function handleUpload()
     {
-        // if (!File::isDirectory($this->image_dir)) {
-        //     File::makeDirectory($this->image_dir, 0777, true);
-        // }
-        // if (!File::isDirectory($this->thumbnail_dir)) {
-        //     File::makeDirectory($this->thumbnail_dir, 0777, true);
-        // }
-
         //Resize image here
         $this->resizeImage($this->image_path, $this->upload_image, 600);
         $this->resizeImage($this->thumbnail_path, $this->upload_image, 200);
@@ -165,9 +158,7 @@ class PictureController extends BaseController
         }
 
         $picture['user_id'] = Auth::id();
-        $picture['title'] = $request->title;
-        $picture['content'] = $request->content;
-        $picture['slug'] = str_slug($request->title);
+        $picture['title'] = $this->new_filename;
 
         if (!$picture->save()) {
             return $this->sendError(['Picture creating failed.', 500]);
@@ -193,28 +184,12 @@ class PictureController extends BaseController
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-	$reqData = $request->all();
+	    $reqData = $request->all();
         $reqData['slug'] = str_slug($request->title);
 
-        if ($request->hasFile('image')) {
-            // set class properties.
-            $this->setDirectoryProperties(Auth::id());
-            $this->createDirectories();
-            $this->setImageProperties($request->file('image'));
-            // make thumbnail, resize and save pictures.
-            $this->handleUpload();
-
-            $reqData['image'] = $this->image_path;
-            $reqData['thumb'] = $this->thumbnail_path;
+	if (!$picture->update($reqData)) {
+            return $this->sendError(['Picture updating failed.', 500]);
         }
-
-    /**
-    $updateData['title'] = $request->title;
-        $updateData['content'] = $request->content;
-        $updateData['slug'] = str_slug($request->title);
-*/
-
-        $picture->update($reqData);
 
 	$updatedPicture = new PictureResource($picture);
 

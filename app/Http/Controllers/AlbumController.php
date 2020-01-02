@@ -42,7 +42,7 @@ class AlbumController extends BaseController
 
         $album = Album::create([
             'user_id' => Auth::id(),
-            'category_id' => $request->gatecory_id,
+            'category_id' => $request->category_id,
             'title' => $request->title,
             'slug' => str_slug($request->title),
             'content' => $request->content,
