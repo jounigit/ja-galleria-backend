@@ -2,13 +2,7 @@
 
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
-// use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route;
-
-// Tässä on vikaa
-// use Illuminate\Routing\Route;
-// Käytä tätä
-// use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +32,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('/albums', 'AlbumController')->except(['index', 'show']);
     Route::resource('/categories', 'CategoryController')->except(['index', 'show']);
     Route::resource('/pictures', 'PictureController')->except(['index', 'show']);
-    // Route::delete('/pictures/{picture}', 'PictureController@destroy');
-    // Route::post('/pictures','PictureController@store');
-
+    Route::resource('/album-pictures', 'AlbumPictureController')->except(['index', 'show']);
 });
