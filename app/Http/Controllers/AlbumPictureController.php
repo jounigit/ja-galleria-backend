@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AlbumPicture;
+use App\Album;
+use App\Http\Resources\AlbumResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use Validator;
@@ -31,7 +33,9 @@ class AlbumPictureController extends BaseController
             'picture_id' => $request->picture_id,
         ]);
 
-        return $this->sendResponse('', 'Data stored successfully.');
+	$album = new AlbumResource(Album::find($request->album_id));
+
+        return $this->sendResponse($album, 'Data stored successfully.');
     }
 
     /**
@@ -55,6 +59,6 @@ class AlbumPictureController extends BaseController
     {
         $albumPicture->delete();
 
-        return $this->sendResponse('', 'Picture deleted form album!');
+        return $this->sendResponse('', 'Picture deleted from album!');
     }
 }
