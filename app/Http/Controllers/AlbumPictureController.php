@@ -67,6 +67,7 @@ class AlbumPictureController extends BaseController
      */
     public function destroy(AlbumPicture $albumPicture)
     {
+        $albumPicture->delete();
         $album = new AlbumResource(Album::find($albumPicture->album_id));
 
         return $this->sendResponse($album, 'Picture removed from album!');
