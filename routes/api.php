@@ -23,6 +23,7 @@ Route::get('/categories', 'CategoryController@index');
 Route::get('/categories/{category}', 'CategoryController@show');
 Route::get('/pictures', 'PictureController@index');
 Route::get('/pictures/{picture}', 'PictureController@show');
+Route::get('/album-pictures', 'AlbumPictureController@index');
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('logout', 'Auth\LoginController@logout');

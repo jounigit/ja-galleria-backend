@@ -12,6 +12,16 @@ use Validator;
 class AlbumPictureController extends BaseController
 {
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return AlbumPicture::all();
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -57,8 +67,8 @@ class AlbumPictureController extends BaseController
      */
     public function destroy(AlbumPicture $albumPicture)
     {
-        $albumPicture->delete();
+        $album = new AlbumResource(Album::find($albumPicture->album_id));
 
-        return $this->sendResponse('', 'Picture deleted from album!');
+        return $this->sendResponse($album, 'Picture removed from album!');
     }
 }
