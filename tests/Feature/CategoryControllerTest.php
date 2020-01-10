@@ -34,20 +34,18 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $this->assertEquals(3, count($response->getData()->data));
+        $this->assertEquals(3, count($response->getData()));
         $response->assertJsonStructure(
             [
-                'data' => [
-                    [
-                        'id',
-                        'user_id',
-                        'title',
-                        'slug',
-                        'content',
-                        'created_at',
-                        'updated_at',
-                        'deleted_at'
-                    ]
+                [
+                    'id',
+                    'user_id',
+                    'title',
+                    'slug',
+                    'content',
+                    'created_at',
+                    'updated_at',
+                    'deleted_at'
                 ]
             ]
         );
@@ -62,7 +60,7 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $category = $response->getData()->data[0];
+        $category = $response->getData()[0];
 
         $showcategories = $this->json('GET', 'api/categories/' . $category->id);
 
@@ -106,7 +104,7 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $category = $response->getData()->data[0];
+        $category = $response->getData()[0];
 
         $data = [
             'title' => 'Päivitetty category',
@@ -129,7 +127,7 @@ class CategoryControllerTest extends TestCase
     {
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
-        $category = $response->getData()->data[0];
+        $category = $response->getData()[0];
 
         $data = [
             'title' => 'Päivitetty category',
@@ -151,7 +149,7 @@ class CategoryControllerTest extends TestCase
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
 
-        $category = $response->getData()->data[0];
+        $category = $response->getData()[0];
 
         $delete = $this->actingAs($this->userNotCreator, 'api')->json('DELETE', '/api/categories/' . $category->id);
         $delete->assertStatus(403);
@@ -168,7 +166,7 @@ class CategoryControllerTest extends TestCase
         $response = $this->json('GET', '/api/categories');
         $response->assertStatus(200);
 
-        $category = $response->getData()->data[0];
+        $category = $response->getData()[0];
 
         $delete = $this->actingAs($this->userCreator, 'api')->json('DELETE', '/api/categories/' . $category->id);
         $delete->assertStatus(200);

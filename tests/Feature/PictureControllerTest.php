@@ -94,7 +94,6 @@ class PictureControllerTest extends TestCase
     public function testCreatePicture()
     {
         $data = [
-            'title' => 'Uusi kuva',
             'image' => UploadedFile::fake()->image('random.jpg')
         ];
 
@@ -110,12 +109,8 @@ class PictureControllerTest extends TestCase
                 'id',
                 'user_id',
                 'title',
-                'slug',
-                'content',
                 'image',
                 'thumb',
-                'created_at',
-                'updated_at'
             ]
         ]);
         // delete user's folder and all subfolders.
@@ -137,19 +132,19 @@ class PictureControllerTest extends TestCase
 
         $data = [
             'title' => 'Päivitetty kuva',
-            'content' => 'Hieno päivitys',
-            'image' => UploadedFile::fake()->image('random.jpg')
+            'content' => 'Hieno päivitys'
         ];
 
         $updated = $this->actingAs($this->userCreator, 'api')->json('PUT', 'api/pictures/' . $picture->id, $data);
 
+        // var_dump($updated);
+        // dd($updated);
+
         $updated->assertStatus(200);
-        $updated->assertJson(['success' => true]);
-        $updated->assertJson(['message' => "Picture updated successfully."]);
+        $updated->assertJson(["success" => true]);
+        $updated->assertJson(["message" => "Picture updated successfully."]);
         // delete user's folder and all subfolders.
-        $delete_dir = File::deleteDirectory(public_path($this->userCreator->id));
-        // assert directory deleting is true
-        $this->assertTrue($delete_dir);
+        File::deleteDirectory(public_path($this->userCreator->id));
     }
 
     /**
