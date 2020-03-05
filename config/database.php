@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Str;
 
+$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+$host = $url["us-cdbr-iron-east-04.cleardb.net"];
+$username = $url["bea3a6c29aba6e"];
+$password = $url["abe1525c"];
+$database = substr($url["path"], 1);
+
 return [
 
     /*
@@ -15,7 +22,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'heroku_mysql_connection'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +41,17 @@ return [
     */
 
     'connections' => [
+
+        'heroku_mysql_connection' => [
+            'driver' => 'mysql',
+            'host' => $host,
+            'database' => $database,
+            'username' => $username,
+            'password' => $password,
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
