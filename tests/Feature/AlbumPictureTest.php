@@ -55,19 +55,11 @@ class AlbumPictureTest extends TestCase
     public function testAlbumDeletes()
     {
         $album = Album::all()->first();
+        $this->assertEquals(1, $album->count());
 
-        // Softdelete album.
+        // Delete album.
         $album->delete();
-        // Get Softdeleted album.
-        $albumTrashed = Album::withTrashed()->first();
-        $this->assertDatabaseHas('albums', $albumTrashed->toArray());
-        $this->assertSoftDeleted('albums', $albumTrashed->toArray());
-        // Check there is still 5 pictures in pivot table..
-        $this->assertEquals(5, $albumTrashed->pictures->count());
-        // Delete album permanently.
-        $albumTrashed->forceDelete();
-        $albumTrashed = Album::withTrashed()->first();
-        $this->assertEquals(null, $albumTrashed);
+        $this->assertEquals(null, $album->count());
 
         // Check there is still 5 pictures..
         $pictures = Picture::all();
