@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-$url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+$url = parse_url(getenv("us-cdbr-iron-east-04.cleardb.net"));
 
 $host = $url["us-cdbr-iron-east-04.cleardb.net"];
 $username = $url["bea3a6c29aba6e"];
