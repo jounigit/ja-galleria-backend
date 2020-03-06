@@ -2,13 +2,6 @@
 
 use Illuminate\Support\Str;
 
-$url = parse_url(getenv("https://calm-meadow-19837.herokuapp.com/"));
-
-$host = $url["us-cdbr-iron-east-04.cleardb.net"];
-$username = $url["bea3a6c29aba6e"];
-$password = $url["abe1525c"];
-$database = substr($url["path"], 1);
-
 return [
 
     /*
@@ -41,17 +34,6 @@ return [
     */
 
     'connections' => [
-
-        'heroku_mysql_connection' => [
-            'driver' => 'mysql',
-            'host' => $host,
-            'database' => 'heroku_471dcd4527756cc',
-            'username' => $username,
-            'password' => $password,
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => '',
-        ],
 
         'mysql' => [
             'driver' => 'mysql',
