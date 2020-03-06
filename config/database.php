@@ -45,7 +45,7 @@ return [
         'heroku_mysql_connection' => [
             'driver' => 'mysql',
             'host' => $host,
-            'database' => $database,
+            'database' => 'heroku_471dcd4527756cc',
             'username' => $username,
             'password' => $password,
             'charset' => 'utf8',
