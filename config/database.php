@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-$url = parse_url(getenv("mysql://bea3a6c29aba6e:abe1525c@us-cdbr-iron-east-04.cleardb.net/heroku_471dcd4527756cc"));
+$url = parse_url(getenv("https://calm-meadow-19837.herokuapp.com/"));
 
 $host = $url["us-cdbr-iron-east-04.cleardb.net"];
 $username = $url["bea3a6c29aba6e"];
@@ -22,7 +22,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'heroku_mysql_connection'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
