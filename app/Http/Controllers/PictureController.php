@@ -81,8 +81,8 @@ class PictureController extends BaseController
         $thumbnail_dir = public_path($user_id . '/thumbnails/');
         $this->image_dir = $image_dir;
         $this->thumbnail_dir = $thumbnail_dir;
-	    $this->images_url = 'http://localhost:8000/' .$user_id . '/images/';
-        $this->thumbnails_url = 'http://localhost:8000/' .$user_id . '/thumbnails/';
+	    $this->images_url = env('APP_URL','') . '/' . $user_id . '/images/';
+        $this->thumbnails_url = env('APP_URL','') . '/' . $user_id . '/thumbnails/';
     }
 
     private function createDirectory($dir)
