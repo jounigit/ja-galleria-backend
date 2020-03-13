@@ -168,6 +168,7 @@ return [
         Laravel\Passport\PassportServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        JD\Cloudder\CloudderServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -229,7 +230,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Image' => Intervention\Image\Facades\Image::class,
-
+        'Cloudder' => JD\Cloudder\Facades\Cloudder::class
     ],
 
 ];
