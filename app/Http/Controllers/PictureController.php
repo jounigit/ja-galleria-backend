@@ -75,7 +75,7 @@ class PictureController extends BaseController
             $picId = Cloudder::getPublicId();
             // $picUrl = $cloundary_upload['url'];
 
-            $picture['image'] = Cloudder::getResult()['url'];
+            $picture['image'] = Cloudder::getResult()['secure_url'];
             $picture['thumb'] = $picId;
             $picture['title'] = $request->file('image')->getClientOriginalName();
             $picture['user_id'] = Auth::id();
