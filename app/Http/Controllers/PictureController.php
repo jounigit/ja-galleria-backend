@@ -133,9 +133,10 @@ class PictureController extends BaseController
         if ($picture->forceDelete()) {
             Cloudder::destroyImage($pic->thumb, '');
             Cloudder::delete($pic->thumb, '');
+            return $this->sendResponse($picture, 'Picture deleted!');
         }
 
-        return $this->sendResponse($picture, 'Picture deleted!');
+        return $this->sendError(['Picture deleting failed.', 500]);
     }
 
 }
