@@ -13,12 +13,8 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
 use JD\Cloudder\Facades\Cloudder;
 
-
-header('Set-Cookie: cross-site-cookie=jag; SameSite=None; Secure');
-
 class PictureController extends BaseController
 {
-    // setcookie('cross-site-cookie', 'jag', ['samesite' => 'None', 'secure' => true]);
     /**
      * Display a listing of the resource.
      *
