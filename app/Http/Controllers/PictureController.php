@@ -12,6 +12,7 @@ use App\Http\Controllers\BaseController;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
 use JD\Cloudder\Facades\Cloudder;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class PictureController extends BaseController
 {
@@ -67,6 +68,7 @@ class PictureController extends BaseController
 
         if ($request->hasFile('image')) {
 
+            Cookie::make('cross-site-cookie', 'jagalleria', ['samesite' => 'None', 'secure' => true]);
             // Cloudder::upload($request->file('image'));
             // Cloudder::upload($request->file('image')->getRealPath(), $current_time);
             Cloudder::upload($request->file('image')->getPathname(), $current_time);
