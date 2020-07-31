@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Validator;
 use App\Http\Controllers\BaseController;
-use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\File;
 use JD\Cloudder\Facades\Cloudder;
 
 class PictureController extends BaseController
@@ -67,13 +65,9 @@ class PictureController extends BaseController
 
         if ($request->hasFile('image')) {
 
-            // Cloudder::upload($request->file('image'));
-            // Cloudder::upload($request->file('image')->getRealPath(), $current_time);
             Cloudder::upload($request->file('image')->getPathname(), $current_time);
-            // $cloundary_upload = Cloudder::getResult();
 
             $picId = Cloudder::getPublicId();
-            // $picUrl = $cloundary_upload['url'];
 
             $picture['image'] = Cloudder::getResult()['secure_url'];
             $picture['thumb'] = $picId;
@@ -140,80 +134,3 @@ class PictureController extends BaseController
     }
 
 }
-
-// private $upload_image;
-// private $image_dir;
-// private $thumbnail_dir;
-// private $image_path;
-// private $thumbnail_path;
-// private $images_url;
-// private $thumbnails_url;
-// private $image_url;
-// private $thumbnail_url;
-// private $new_filename;
-
-    // /**
-    //  * @param mixed $image
-    //  * @return void
-    //  */
-    // protected function setImageProperties($image)
-    // {
-    //     $this->new_filename = time() . '.' . $image->getClientOriginalExtension();
-    //     $this->upload_image = $image;
-    //     $this->image_path = $this->image_dir . $this->new_filename;
-    //     $this->thumbnail_path = $this->thumbnail_dir . $this->new_filename;
-	//     $this->image_url = $this->images_url . $this->new_filename;
-    //     $this->thumbnail_url = $this->thumbnails_url . $this->new_filename;
-    // }
-
-    // /**
-    //  * @param int $user_id
-    //  * @return void
-    //  */
-    // protected function setDirectoryProperties(Int $user_id)
-    // {
-    //     $image_dir = public_path($user_id . '/images/');
-    //     $thumbnail_dir = public_path($user_id . '/thumbnails/');
-    //     $this->image_dir = $image_dir;
-    //     $this->thumbnail_dir = $thumbnail_dir;
-	//     $this->images_url = env('APP_URL','') . $user_id . '/images/';
-    //     $this->thumbnails_url = env('APP_URL','') . $user_id . '/thumbnails/';
-    // }
-
-    // private function createDirectory($dir)
-    // {
-    //     if (!File::isDirectory($dir)) {
-    //         File::makeDirectory($dir, 0777, true);
-    //     }
-    // }
-
-    // private function createDirectories()
-    // {
-    //     $this->createDirectory($this->image_dir);
-    //     $this->createDirectory($this->thumbnail_dir);
-    // }
-
-    // /**
-    //  * Handle uploaded image. Make the directories for user and save the resized images.
-    //  *
-    //  * @return void
-    //  */
-    // private function handleUpload()
-    // {
-    //     //Resize image here
-    //     $this->resizeImage($this->image_path, $this->upload_image, 600);
-    //     $this->resizeImage($this->thumbnail_path, $this->upload_image, 200);
-    // }
-
-    // /**
-    //  * @param mixed $image_path
-    //  * @param mixed $image
-    //  * @param mixed $size
-    //  * @return Intervention\Image\Image
-    //  */
-    // private function resizeImage($image_path, $image, $size)
-    // {
-    //     Image::make($image)->resize($size, $size, function ($constraint) {
-    //         $constraint->aspectRatio();
-    //     })->save($image_path);
-    // }
